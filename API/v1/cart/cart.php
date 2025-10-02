@@ -119,7 +119,14 @@ switch ($action) {
             );
         }
         
-        $response = array('success' => true, 'message' => 'Added to cart');
+        // Return the updated cart items after adding
+        $response = array(
+            'success' => true,
+            'message' => 'Added to cart',
+            'data' => array(
+                'items' => array_values($_SESSION['cart_items'])
+            )
+        );
         break;
         
     case 'get':

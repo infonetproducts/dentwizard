@@ -1,46 +1,11 @@
 <?php
 // User Addresses API - FINAL WORKING VERSION
-// Allowed origins for CORS
-$allowed_origins = [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'https://dentwizard.onrender.com',
-    'https://dentwizard-prod.onrender.com',
-    'https://dentwizard.lgstore.com',
-    'https://dentwizardapparel.com',
-    'https://www.dentwizardapparel.com'
-];
 
-// Try to determine origin from HTTP_ORIGIN or HTTP_REFERER
-$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+// Include centralized CORS configuration
+require_once __DIR__ . '/../../cors.php';
 
-// If no origin header, try to extract from referer
-if (empty($origin) && !empty($_SERVER['HTTP_REFERER'])) {
-    $referer = $_SERVER['HTTP_REFERER'];
-    $parsed = parse_url($referer);
-    if ($parsed) {
-        $origin = $parsed['scheme'] . '://' . $parsed['host'];
-        if (isset($parsed['port']) && !in_array($parsed['port'], [80, 443])) {
-            $origin .= ':' . $parsed['port'];
-        }
-    }
-}
-
-if (in_array($origin, $allowed_origins)) {
-    header("Access-Control-Allow-Origin: $origin");
-} else {
-    header("Access-Control-Allow-Origin: http://localhost:3000");
-}
-
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Session-ID");
-header("Access-Control-Allow-Credentials: true");
+// Set content type
 header("Content-Type: application/json");
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit();
-}
 
 // Database connection - exactly like your working files
 $host = 'localhost';

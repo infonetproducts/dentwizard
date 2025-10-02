@@ -13,7 +13,8 @@ $allowed_origins = [
     'http://localhost:3004',
     'http://localhost:3005',
     'https://dentwizard.lgstore.com',
-    'https://dentwizard.onrender.com',  // Staging Render deployment
+    'https://dentwizard-app-staging.onrender.com',  // Staging Render deployment
+    'https://dentwizard.onrender.com',  // Alternative staging
     'https://dentwizard-prod.onrender.com',  // Production Render deployment
     'https://dentwizardapparel.com',  // Production custom domain
     'https://www.dentwizardapparel.com'  // Production custom domain (www)

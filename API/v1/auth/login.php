@@ -5,16 +5,11 @@
 
 session_start();
 
-// CORS headers for credentials/cookies
-header("Access-Control-Allow-Origin: http://localhost:3000"); // Must be specific origin for credentials
-header("Access-Control-Allow-Credentials: true"); // Allow cookies
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Session-ID");
-header("Content-Type: application/json");
+// Include centralized CORS configuration
+require_once __DIR__ . '/../../cors.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit();
-}
+// Set content type
+header("Content-Type: application/json");
 
 // Database connection - matching working APIs structure
 $mysqli = @new mysqli('localhost', 'rwaf', 'Py*uhb$L$##', 'rwaf');

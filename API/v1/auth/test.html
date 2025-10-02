@@ -1,0 +1,93 @@
+<?php
+// Test authentication endpoints
+header("Content-Type: text/html");
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { background: #f0f0f0; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e9; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <h1>DentWizard Auth Testing</h1>
+    
+    <h2>Step 1: Check Auth Type</h2>
+    <input type="email" id="checkEmail" placeholder="Enter email" value="joseph.lorenzo@dentwizard.com">
+    <button onclick="checkAuthType()">Check Auth Type</button>
+    <div id="authTypeResult" class="result"></div>
+    
+    <h2>Step 2: Login (Standard)</h2>
+    <input type="email" id="loginEmail" placeholder="Email" value="joseph.lorenzo@dentwizard.com">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="standardLogin()">Login</button>
+    <div id="loginResult" class="result"></div>
+    
+    <script>
+    const API_BASE = '/lg/API/v1';
+    
+    async function checkAuthType() {
+        const email = document.getElementById('checkEmail').value;
+        const resultDiv = document.getElementById('authTypeResult');
+        
+        try {
+            const response = await fetch(API_BASE + '/auth/check-type.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            
+            const data = await response.json();
+            resultDiv.className = 'result success';
+            resultDiv.innerHTML = '<strong>Result:</strong><br>' + 
+                'User exists: ' + data.exists + '<br>' +
+                'Auth type: <strong>' + data.auth_type + '</strong><br>' +
+                'Has password: ' + data.has_password + '<br>' +
+                'Email: ' + data.email;
+        } catch (error) {
+            resultDiv.className = 'result error';
+            resultDiv.innerHTML = 'Error: ' + error.message;
+        }
+    }
+    
+    async function standardLogin() {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const resultDiv = document.getElementById('loginResult');
+        
+        try {
+            const response = await fetch(API_BASE + '/auth/login.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = '<strong>Login Successful!</strong><br>' +
+                    'User ID: ' + data.user.id + '<br>' +
+                    'Name: ' + data.user.name + '<br>' +
+                    'Email: ' + data.user.email + '<br>' +
+                    'Budget Balance: $' + data.user.budget.balance + '<br>' +
+                    'Token: ' + data.token.substring(0, 20) + '...';
+            } else {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = 'Login failed: ' + (data.error || 'Unknown error');
+            }
+        } catch (error) {
+            resultDiv.className = 'result error';
+            resultDiv.innerHTML = 'Error: ' + error.message;
+        }
+    }
+    </script>
+</body>
+</html>

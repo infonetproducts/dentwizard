@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.924a135e.css",
+    "main.js": "/static/js/main.da28cc1d.js",
+    "static/media/dentwizard.png": "/static/media/dentwizard.dccac1b8c7d6f27045ee.png",
+    "index.html": "/index.html",
+    "main.924a135e.css.map": "/static/css/main.924a135e.css.map",
+    "main.da28cc1d.js.map": "/static/js/main.da28cc1d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.924a135e.css",
+    "static/js/main.da28cc1d.js"
+  ]
+}

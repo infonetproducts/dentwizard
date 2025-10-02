@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Color Variant Test - Product 91754</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .color-preview {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            border: 2px solid #333;
+            cursor: pointer;
+            vertical-align: top;
+        }
+        .color-info {
+            display: inline-block;
+            vertical-align: top;
+            margin: 10px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+            font-size: 1.2em;
+        }
+        .variant-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .variant-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px;
+            width: 250px;
+            text-align: center;
+        }
+        .variant-image {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>Color Variant Test for Product 91754</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Current API Response</h2>
+        <button onclick="testCurrentAPI()">Test Current detail.php</button>
+        <div id="currentAPIResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test Database Query for Color Variants</h2>
+        <button onclick="testColorQuery()">Test Color Query</button>
+        <div id="colorQueryResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Visual Color Variant Preview</h2>
+        <button onclick="displayColorVariants()">Show Color Variants</button>
+        <div id="variantPreview" class="variant-container"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API/v1';
+        const PRODUCT_ID = 91754;
+        
+        async function testCurrentAPI() {
+            const resultDiv = document.getElementById('currentAPIResult');
+            resultDiv.innerHTML = 'Testing current API response for product ' + PRODUCT_ID + '...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/products/detail.php?id=${PRODUCT_ID}`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `<div class="success">
+<strong>Current API Response:</strong>
+
+Product Found: ${data.data ? 'YES' : 'NO'}
+Product Name: ${data.data?.name || 'N/A'}
+Product FormID: ${data.data?.sku || 'N/A'}
+Product Image: ${data.data?.image_url || 'N/A'}
+
+Available Sizes: ${data.data?.available_sizes ? data.data.available_sizes.join(', ') : 'None'}
+
+Color Variants in Response: ${data.data?.color_variants ? 'YES' : 'NO'}
+Number of Color Variants: ${data.data?.color_variants ? data.data.color_variants.length : 0}
+
+<strong>Raw Color Variant Data:</strong>
+${data.data?.color_variants ? JSON.stringify(data.data.color_variants, null, 2) : 'No color variants in response'}
+</div>`;
+                
+                // Store globally for other functions
+                window.apiData = data.data;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">
+Error: ${error.message}
+</div>`;
+            }
+        }
+        
+        async function testColorQuery() {
+            const resultDiv = document.getElementById('colorQueryResult');
+            
+            if (!window.apiData) {
+                resultDiv.innerHTML = '<div class="warning">Please run "Test Current API" first</div>';
+                return;
+            }
+            
+            const formId = window.apiData.sku;
+            if (!formId) {
+                resultDiv.innerHTML = '<div class="error">No FormID found in API response</div>';
+                return;
+            }
+            
+            // Extract base FormID (remove size suffix)
+            const baseFormId = formId.replace(/[-_](XS|S|M|L|XL|XXL|XXXL|2XL|3XL|LT|XLT|2LT|3LT)$/i, '');
+            const basePattern = baseFormId.substring(0, 8);
+            
+            resultDiv.innerHTML = `<div class="warning">
+<strong>FormID Analysis:</strong>
+Full FormID: ${formId}
+Base FormID (no size): ${baseFormId}
+Search Pattern: ${basePattern}%
+
+<strong>Expected Color Variants:</strong>
+Based on FormID pattern, we should find products like:
+- ${basePattern}-Atlas-[SIZE]
+- ${basePattern}-Polished-[SIZE]
+- ${basePattern}-Black-[SIZE]
+- etc.
+
+<strong>How PHP Finds Colors:</strong>
+1. Query: SELECT * FROM Items WHERE FormID LIKE '${basePattern}%'
+2. Extract color from FormID (e.g., "Atlas" from "BCK01168-Atlas-LT")
+3. Group by color name
+4. Return array with id, name, image, price for each color
+
+<strong>Color Extraction Logic:</strong>
+- Look for color keywords in FormID (Atlas, Polished, Black, Navy, etc.)
+- If not in FormID, check product title
+- Each color variant has its own product ID and image
+</div>`;
+        }
+        
+        async function displayColorVariants() {
+            const resultDiv = document.getElementById('variantPreview');
+            
+            if (!window.apiData) {
+                resultDiv.innerHTML = '<div class="warning">Please run "Test Current API" first</div>';
+                return;
+            }
+            
+            if (!window.apiData.color_variants || window.apiData.color_variants.length === 0) {
+                // Create mock data to show what we expect
+                resultDiv.innerHTML = `
+                <div style="width: 100%; padding: 20px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: 5px;">
+                    <h3>No Color Variants in Current API Response</h3>
+                    <p>The API needs to be updated to return color variants.</p>
+                    
+                    <h4>Expected Structure:</h4>
+                    <pre>
+{
+  "color_variants": [
+    {
+      "id": 91754,
+      "name": "Atlas",
+      "image": "https://dentwizard.lgstore.com/pdf/244/image-atlas.jpg",
+      "price": 65.00
+    },
+    {
+      "id": 91755,
+      "name": "Polished",
+      "image": "https://dentwizard.lgstore.com/pdf/244/image-polished.jpg",
+      "price": 65.00
+    }
+  ]
+}
+                    </pre>
+                </div>`;
+            } else {
+                // Display actual color variants
+                let html = '<h3>Available Color Variants:</h3>';
+                window.apiData.color_variants.forEach(variant => {
+                    html += `
+                    <div class="variant-box">
+                        <img src="${variant.image}" alt="${variant.name}" class="variant-image" onerror="this.src='/placeholder.png'">
+                        <h4>${variant.name}</h4>
+                        <p>ID: ${variant.id}</p>
+                        <p>Price: $${variant.price}</p>
+                    </div>`;
+                });
+                resultDiv.innerHTML = html;
+            }
+        }
+        
+        // Auto-test on load
+        window.onload = () => {
+            console.log('Color Variant Test Tool Loaded');
+            console.log('Testing product:', PRODUCT_ID);
+        };
+    </script>
+</body>
+</html>

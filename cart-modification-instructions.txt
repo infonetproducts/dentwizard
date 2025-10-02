@@ -1,0 +1,10 @@
+<?php
+// Copy your working cart.php and just add this ONE LINE in the 'add' case:
+
+// In the 'add' case, after getting the input parameters, add:
+$image_param = isset($input['image']) ? $input['image'] : '';
+
+// Then when building the cart item array, change the image line to:
+'image' => !empty($image_param) ? $image_param : $image_url
+
+// That's it! The rest stays exactly the same as your working version.

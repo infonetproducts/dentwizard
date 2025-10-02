@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cart Debug Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Cart API Debug Tests</h1>
+    <p>Upload <strong>debug-test.php</strong> to your server at <code>/lg/API/v1/cart/debug-test.php</code> then run these tests:</p>
+    
+    <h2>Step-by-Step Tests</h2>
+    
+    <button onclick="testStep(1)">Test 1: Basic JSON Output</button>
+    <div id="result-1" class="result"></div>
+    
+    <button onclick="testStep(2)">Test 2: Session Start</button>
+    <div id="result-2" class="result"></div>
+    
+    <button onclick="testStep(3)">Test 3: Database Connection</button>
+    <div id="result-3" class="result"></div>
+    
+    <button onclick="testStep(4)">Test 4: Database Query (Product 91754)</button>
+    <div id="result-4" class="result"></div>
+    
+    <button onclick="testStep(5)">Test 5: POST Data Reading</button>
+    <div id="result-5" class="result"></div>
+    
+    <h2>Test Current add.php Raw Output</h2>
+    <button onclick="testRawAdd()">Get Raw add.php Output</button>
+    <div id="result-raw" class="result"></div>
+    
+    <h2>Compare Files</h2>
+    <button onclick="compareFiles()">Compare get.php vs add.php</button>
+    <div id="result-compare" class="result"></div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API/v1';
+        
+        async function testStep(step) {
+            const resultEl = document.getElementById('result-' + step);
+            resultEl.textContent = 'Testing...';
+            
+            try {
+                let response;
+                if (step === 5) {
+                    // POST test
+                    response = await fetch(`${API_BASE}/cart/debug-test.php?test=${step}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product_id: 91754, quantity: 1 })
+                    });
+                } else {
+                    // GET tests
+                    response = await fetch(`${API_BASE}/cart/debug-test.php?test=${step}`);
+                }
+                
+                const text = await response.text();
+                
+                try {
+                    const json = JSON.parse(text);
+                    resultEl.textContent = 'Status: ' + response.status + '\n';
+                    resultEl.textContent += JSON.stringify(json, null, 2);
+                    resultEl.className = json.error ? 'result error' : 'result success';
+                } catch (e) {
+                    resultEl.textContent = 'Status: ' + response.status + '\n';
+                    resultEl.textContent += 'Raw output: ' + text;
+                    resultEl.className = 'result error';
+                }
+            } catch (error) {
+                resultEl.textContent = 'Network Error: ' + error.message;
+                resultEl.className = 'result error';
+            }
+        }
+        
+        async function testRawAdd() {
+            const resultEl = document.getElementById('result-raw');
+            resultEl.textContent = 'Testing...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/cart/add.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: 91754, quantity: 1, size: 'XLT', color: 'Atlas' })
+                });
+                
+                const text = await response.text();
+                
+                resultEl.textContent = 'Status: ' + response.status + '\n';
+                resultEl.textContent += 'Content-Type: ' + response.headers.get('content-type') + '\n';
+                resultEl.textContent += 'Content-Length: ' + response.headers.get('content-length') + '\n\n';
+                resultEl.textContent += 'Raw output:\n' + text;
+                
+                if (text.trim() === '') {
+                    resultEl.textContent += '\n\n⚠️ EMPTY RESPONSE - PHP is crashing without output';
+                    resultEl.textContent += '\nThis usually means a fatal error that\'s not being displayed';
+                }
+                
+                resultEl.className = response.status === 500 ? 'result error' : 'result';
+            } catch (error) {
+                resultEl.textContent = 'Network Error: ' + error.message;
+                resultEl.className = 'result error';
+            }
+        }
+        
+        async function compareFiles() {
+            const resultEl = document.getElementById('result-compare');
+            resultEl.textContent = 'Comparing...';
+            
+            try {
+                // Test get.php
+                const getResponse = await fetch(`${API_BASE}/cart/get.php`);
+                const getText = await getResponse.text();
+                
+                // Test add.php with GET (should give error but not crash)
+                const addResponse = await fetch(`${API_BASE}/cart/add.php`);
+                const addText = await addResponse.text();
+                
+                resultEl.textContent = '=== get.php (WORKING) ===\n';
+                resultEl.textContent += 'Status: ' + getResponse.status + '\n';
+                resultEl.textContent += 'Output length: ' + getText.length + ' bytes\n';
+                resultEl.textContent += 'Valid JSON: ' + (isJSON(getText) ? 'Yes ✓' : 'No ✗') + '\n\n';
+                
+                resultEl.textContent += '=== add.php (BROKEN) ===\n';
+                resultEl.textContent += 'Status: ' + addResponse.status + '\n';
+                resultEl.textContent += 'Output length: ' + addText.length + ' bytes\n';
+                resultEl.textContent += 'Valid JSON: ' + (isJSON(addText) ? 'Yes ✓' : 'No ✗') + '\n\n';
+                
+                if (addText.length === 0) {
+                    resultEl.textContent += '⚠️ add.php returns EMPTY - Fatal error occurring';
+                }
+                
+                resultEl.className = 'result';
+            } catch (error) {
+                resultEl.textContent = 'Error: ' + error.message;
+                resultEl.className = 'result error';
+            }
+        }
+        
+        function isJSON(str) {
+            try {
+                JSON.parse(str);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

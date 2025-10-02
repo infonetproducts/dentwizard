@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Color API - Product 91754</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .color-box {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            border: 2px solid #333;
+            text-align: center;
+            width: 200px;
+            cursor: pointer;
+        }
+        .color-box img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+        }
+        .color-box.selected {
+            border-color: #007bff;
+            background: #e7f1ff;
+        }
+        #main-image {
+            max-width: 400px;
+            height: 400px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Color Variants API</h1>
+    
+    <div class="test-section">
+        <h2>Test New API with Color Options</h2>
+        <button onclick="testNewAPI()">Test detail-with-colors.php</button>
+        <div id="apiResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Interactive Color Selection Demo</h2>
+        <div id="colorDemo" style="display: none;">
+            <div style="float: left; margin-right: 50px;">
+                <h3>Main Product Image</h3>
+                <img id="main-image" src="" />
+                <p>Selected Color: <span id="selected-color">None</span></p>
+            </div>
+            <div style="float: left;">
+                <h3>Available Colors</h3>
+                <div id="color-options"></div>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API/v1';
+        let productData = null;
+        
+        async function testNewAPI() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = 'Testing enhanced API...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/products/detail-with-colors-v2.php?id=91754`);
+                const text = await response.text();
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    resultDiv.innerHTML = `<div class="error">Response is not valid JSON:\n${text}</div>`;
+                    return;
+                }
+                
+                if (data.status === 'success') {
+                    productData = data.data;
+                    
+                    resultDiv.innerHTML = `<div class="success">
+✅ API Working Successfully!
+
+Product: ${data.data.name}
+SKU: ${data.data.sku}
+Price: $${data.data.price}
+
+Available Sizes: ${data.data.available_sizes.join(', ')}
+
+Color Variants Found: ${data.data.color_variants.length}
+${data.data.color_variants.map(c => `
+  - ${c.name}
+    ID: ${c.id}
+    Image: ${c.image_filename}
+    Price: $${c.price}`).join('')}
+
+Raw Response:
+${JSON.stringify(data, null, 2)}
+</div>`;
+                    
+                    // Show the demo
+                    showColorDemo(data.data);
+                } else {
+                    resultDiv.innerHTML = `<div class="error">Error: ${data.message || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Network Error: ${error.message}</div>`;
+            }
+        }
+        
+        function showColorDemo(product) {
+            const demoDiv = document.getElementById('colorDemo');
+            const colorOptionsDiv = document.getElementById('color-options');
+            const mainImage = document.getElementById('main-image');
+            
+            // Set initial image
+            mainImage.src = product.color_variants[0].image;
+            document.getElementById('selected-color').textContent = product.color_variants[0].name;
+            
+            // Create color option buttons
+            colorOptionsDiv.innerHTML = '';
+            product.color_variants.forEach((variant, index) => {
+                const colorBox = document.createElement('div');
+                colorBox.className = 'color-box' + (index === 0 ? ' selected' : '');
+                colorBox.innerHTML = `
+                    <img src="${variant.image}" alt="${variant.name}" />
+                    <h4>${variant.name}</h4>
+                    <p>$${variant.price}</p>
+                `;
+                colorBox.onclick = () => selectColor(variant, colorBox);
+                colorOptionsDiv.appendChild(colorBox);
+            });
+            
+            demoDiv.style.display = 'block';
+        }
+        
+        function selectColor(variant, element) {
+            // Update main image
+            document.getElementById('main-image').src = variant.image;
+            document.getElementById('selected-color').textContent = variant.name;
+            
+            // Update selected state
+            document.querySelectorAll('.color-box').forEach(box => {
+                box.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            console.log('Selected color:', variant);
+        }
+    </script>
+</body>
+</html>

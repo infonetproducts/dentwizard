@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test - Dentwizard API</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .success {
+            color: #28a745;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .info {
+            color: #004085;
+            background: #d1ecf1;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #dee2e6;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            display: inline-block;
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Dentwizard API CORS Test</h1>
+        
+        <p>Use this page to verify that CORS headers are properly configured on the API.</p>
+        
+        <h2>Test Endpoints:</h2>
+        <div>
+            <button onclick="testEndpoint('test-cors.php')">Test CORS Endpoint</button>
+            <button onclick="testEndpoint('products/list.php?limit=1')">Test Products</button>
+            <button onclick="testEndpoint('categories/list.php')">Test Categories</button>
+            <button onclick="testEndpoint('cart/get.php')">Test Cart</button>
+        </div>
+        
+        <h2>Results:</h2>
+        <div id="results"></div>
+        
+        <h2>Instructions:</h2>
+        <ol>
+            <li>Open this file in your browser (can be opened locally)</li>
+            <li>Click each button to test the endpoints</li>
+            <li>✅ Green = CORS is working</li>
+            <li>❌ Red = CORS needs to be fixed</li>
+        </ol>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API';
+        
+        async function testEndpoint(endpoint) {
+            const resultsDiv = document.getElementById('results');
+            const fullUrl = `${API_BASE}/${endpoint}`;
+            
+            resultsDiv.innerHTML = `<div class="info">Testing: <span class="endpoint">${fullUrl}</span></div>`;
+            
+            try {
+                const response = await fetch(fullUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const responseText = await response.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    data = responseText;
+                }
+                
+                if (response.ok) {
+                    resultsDiv.innerHTML += `
+                        <div class="success">
+                            ✅ <strong>SUCCESS!</strong> CORS is working for ${endpoint}
+                            <br>Status: ${response.status}
+                        </div>
+                        <pre>${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</pre>
+                    `;
+                } else {
+                    resultsDiv.innerHTML += `
+                        <div class="error">
+                            ⚠️ Server returned status ${response.status} for ${endpoint}
+                            <br>This might be an authentication or server error, not CORS.
+                        </div>
+                        <pre>${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML += `
+                    <div class="error">
+                        ❌ <strong>CORS BLOCKED!</strong>
+                        <br>Endpoint: ${endpoint}
+                        <br>Error: ${error.message}
+                        <br><br>
+                        <strong>Fix Required:</strong> Add CORS headers to this PHP file on the server.
+                    </div>
+                `;
+            }
+        }
+        
+        // Test the main endpoint on load
+        window.onload = () => {
+            testEndpoint('test-cors.php');
+        };
+    </script>
+</body>
+</html>

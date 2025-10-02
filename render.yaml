@@ -1,0 +1,59 @@
+services:
+  # PHP API Backend
+  - type: web
+    name: dentwizard-api
+    runtime: docker
+    repo: https://github.com/infonetproducts/dentwizard
+    region: oregon
+    plan: starter
+    rootDir: ./API
+    dockerfilePath: ./API/Dockerfile
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DB_HOST
+        sync: false  # Set manually in Render dashboard (sensitive)
+      - key: DB_PORT
+        value: 3306
+      - key: DB_NAME
+        value: rwaf
+      - key: DB_USER
+        sync: false  # Set manually in Render dashboard (sensitive)
+      - key: DB_PASSWORD
+        sync: false  # Set manually in Render dashboard (sensitive)
+      - key: SAML_ENABLED
+        value: true
+      - key: SAML_SP_ENTITY_ID
+        value: https://dentwizard-app.onrender.com
+      - key: SAML_SP_ACS_URL
+        value: https://dentwizard-api.onrender.com/api/v1/auth/saml/callback
+      - key: SAML_SP_SLS_URL
+        value: https://dentwizard-api.onrender.com/api/v1/auth/saml/logout
+      - key: SAML_IDP_ENTITY_ID
+        value: https://sts.windows.net/ea1c5a3f-4d62-491a-8ba4-2e9955015493/
+      - key: SAML_IDP_SSO_URL
+        value: https://login.microsoftonline.com/ea1c5a3f-4d62-491a-8ba4-2e9955015493/saml2
+      - key: SAML_IDP_SLO_URL
+        value: https://login.microsoftonline.com/ea1c5a3f-4d62-491a-8ba4-2e9955015493/saml2
+      - key: CORS_ORIGIN
+        value: https://dentwizard-app.onrender.com
+    healthCheckPath: /api/v1/health
+
+  # React Frontend
+  - type: web
+    name: dentwizard-app
+    runtime: static
+    repo: https://github.com/infonetproducts/dentwizard
+    region: oregon
+    plan: starter
+    buildCommand: cd react-app && npm install && npm run build
+    staticPublishPath: ./react-app/build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://dentwizard-api.onrender.com
+      - key: REACT_APP_SAML_ENABLED
+        value: true
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

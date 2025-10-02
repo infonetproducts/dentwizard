@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Detail API with Logos</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; }
+        button { padding: 10px 20px; margin: 5px; }
+        #result { background: #f5f5f5; padding: 15px; margin-top: 20px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Test Detail.php API Response</h1>
+    <button onclick="testProduct(91754)">Test Product 91754</button>
+    <button onclick="testProduct(83946)">Test Product 83946</button>
+    <div id="result"></div>
+
+    <script>
+        async function testProduct(id) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(`/lg/API/v1/products/detail.php?id=${id}`);
+                const data = await response.json();
+                
+                // Display full response
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                
+                // Highlight logo info if present
+                if (data.data && data.data.available_logos) {
+                    resultDiv.textContent += '\n\n✅ LOGOS FOUND:\n' + 
+                        JSON.stringify(data.data.available_logos, null, 2);
+                } else {
+                    resultDiv.textContent += '\n\n❌ No logos in response';
+                }
+                
+            } catch (error) {
+                resultDiv.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Database Color Check</title>
+    <style>
+        body { font-family: Arial; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { background: #f9f9f9; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        pre { background: #333; color: #fff; padding: 10px; overflow: auto; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        td, th { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>Check Database for Color Images</h1>
+    
+    <p>First, let's see exactly what's in the database for product 91754's color variants.</p>
+    
+    <button onclick="checkDatabase()">Check Database</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function checkDatabase() {
+            try {
+                // Upload test-colors.php to server first, then:
+                const response = await fetch('https://dentwizard.lgstore.com/lg/API/v1/cart/test-colors.php');
+                const data = await response.json();
+                
+                let html = '<div class="result">';
+                html += '<h3>Product Info:</h3>';
+                html += '<table>';
+                html += '<tr><th>Field</th><th>Value</th></tr>';
+                html += '<tr><td>ID</td><td>' + data.product.ID + '</td></tr>';
+                html += '<tr><td>item_title</td><td>' + data.product.item_title + '</td></tr>';
+                html += '<tr><td>ImageFile</td><td>' + data.product.ImageFile + '</td></tr>';
+                html += '<tr><td>CID</td><td>' + data.product.CID + '</td></tr>';
+                html += '</table>';
+                
+                html += '<h3>Color Variants in Database:</h3>';
+                if (data.color_variants && data.color_variants.length > 0) {
+                    html += '<table>';
+                    html += '<tr><th>option_id</th><th>display_name</th><th>value</th><th>color_image</th></tr>';
+                    data.color_variants.forEach(color => {
+                        html += '<tr>';
+                        html += '<td>' + color.option_id + '</td>';
+                        html += '<td><strong>' + color.display_name + '</strong></td>';
+                        html += '<td>' + color.value + '</td>';
+                        html += '<td>' + (color.color_image || 'NULL') + '</td>';
+                        html += '</tr>';
+                    });
+                    html += '</table>';
+                } else {
+                    html += '<p>No color variants found in item_group_options table.</p>';
+                }
+                
+                html += '<h3>URLs that would be generated:</h3>';
+                html += '<ul>';
+                html += '<li>Default: ' + data.test_urls.default + '</li>';
+                html += '<li>Atlas: ' + (data.test_urls.atlas || 'No Atlas image found') + '</li>';
+                html += '<li>Polished: ' + (data.test_urls.polished || 'No Polished image found') + '</li>';
+                html += '</ul>';
+                
+                html += '<h3>Raw JSON:</h3>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                html += '</div>';
+                
+                document.getElementById('results').innerHTML = html;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <div class="result" style="color: red;">
+                        Error: ${error.message}
+                        <br><br>
+                        Make sure to upload test-colors.php to /lg/API/v1/cart/test-colors.php first!
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

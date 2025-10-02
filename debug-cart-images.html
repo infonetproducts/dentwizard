@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Cart Image URLs</title>
+    <style>
+        body { font-family: Arial; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; margin: 10px; }
+        .result { background: #f9f9f9; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f0f0f0; }
+        img { max-width: 100px; }
+        .highlight { background: yellow; }
+    </style>
+</head>
+<body>
+    <h1>Debug Cart Image URLs</h1>
+    
+    <button onclick="checkCart()">Check Cart Contents</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function checkCart() {
+            try {
+                const response = await fetch('http://localhost:3000/lg/API/v1/cart/cart.php?action=get', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                let html = '<div class="result">';
+                html += '<h3>Cart Items:</h3>';
+                
+                if (data.data && data.data.cart_items && data.data.cart_items.length > 0) {
+                    html += '<table>';
+                    html += '<tr><th>Color</th><th>Image URL</th><th>Expected</th><th>Actual Image</th></tr>';
+                    
+                    data.data.cart_items.forEach(item => {
+                        const isPolished = item.color === 'Polished';
+                        const currentUrl = item.image || 'No image';
+                        
+                        let expectedUrl = '';
+                        if (isPolished) {
+                            expectedUrl = currentUrl.replace('.jpg', 'P.jpg');
+                        } else {
+                            expectedUrl = currentUrl;
+                        }
+                        
+                        html += '<tr>';
+                        html += '<td><strong>' + item.color + '</strong></td>';
+                        html += '<td style="font-size: 11px; word-break: break-all;">' + currentUrl + '</td>';
+                        html += '<td style="font-size: 11px; word-break: break-all;">' + expectedUrl + '</td>';
+                        html += '<td><img src="' + currentUrl + '" onerror="this.src=\'https://via.placeholder.com/100\'"></td>';
+                        html += '</tr>';
+                    });
+                    
+                    html += '</table>';
+                    
+                    html += '<h4>Raw Cart Data:</h4>';
+                    html += '<pre>' + JSON.stringify(data.data.cart_items, null, 2) + '</pre>';
+                } else {
+                    html += '<p>Cart is empty</p>';
+                }
+                
+                html += '</div>';
+                document.getElementById('results').innerHTML = html;
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<div class="result" style="color: red;">Error: ' + error.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>

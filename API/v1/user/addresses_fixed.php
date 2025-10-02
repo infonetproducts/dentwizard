@@ -1,0 +1,129 @@
+<?php
+// User Addresses API - Matching detail.php structure exactly
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Session-ID");
+header("Content-Type: application/json");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit();
+}
+
+// Database connection - EXACTLY like detail.php
+$host = 'localhost';
+$user = 'rwaf';
+$pass = 'Py*uhb$L$##';
+$db = 'rwaf';
+
+$mysqli = @new mysqli($host, $user, $pass, $db);
+
+if ($mysqli->connect_error) {
+    die(json_encode(array('status' => 'error', 'message' => 'Database connection failed')));
+}
+
+// Get user_id parameter - similar to how detail.php gets product_id
+$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 19346;
+
+// Handle GET request
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // First check if table exists
+    $check_sql = "SHOW TABLES LIKE 'user_addresses'";
+    $check_result = $mysqli->query($check_sql);
+    
+    if ($check_result->num_rows == 0) {
+        // Table doesn't exist, return empty array
+        die(json_encode(array('status' => 'success', 'data' => array())));
+    }
+    
+    // Get addresses for user
+    $sql = "SELECT * FROM user_addresses WHERE user_id = $user_id ORDER BY is_default DESC, id DESC";
+    $result = $mysqli->query($sql);
+    
+    if (!$result) {
+        die(json_encode(array('status' => 'error', 'message' => 'Query failed')));
+    }
+    
+    $addresses = array();
+    while ($row = $result->fetch_assoc()) {
+        $addresses[] = $row;
+    }
+    
+    die(json_encode(array('status' => 'success', 'data' => $addresses)));
+}
+
+// Handle POST request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Get input
+    $input_raw = file_get_contents('php://input');
+    $input = json_decode($input_raw, true);
+    
+    // First create table if it doesn't exist
+    $create_table = "CREATE TABLE IF NOT EXISTS `user_addresses` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `user_id` int(11) NOT NULL,
+        `nickname` varchar(100) DEFAULT NULL,
+        `first_name` varchar(100) DEFAULT NULL,
+        `last_name` varchar(100) DEFAULT NULL,
+        `address1` varchar(255) NOT NULL,
+        `address2` varchar(255) DEFAULT NULL,
+        `city` varchar(100) NOT NULL,
+        `state` varchar(50) NOT NULL,
+        `zip` varchar(20) NOT NULL,
+        `country` varchar(100) DEFAULT 'United States',
+        `phone` varchar(20) DEFAULT NULL,
+        `is_default` tinyint(1) DEFAULT 0,
+        `created_at` datetime DEFAULT NULL,
+        PRIMARY KEY (`id`),
+        KEY `user_id` (`user_id`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8";
+    
+    $mysqli->query($create_table);
+    
+    // Prepare data
+    $nickname = $mysqli->real_escape_string($input['nickname']);
+    $first_name = $mysqli->real_escape_string($input['first_name']);
+    $last_name = $mysqli->real_escape_string($input['last_name']);
+    $address1 = $mysqli->real_escape_string($input['address1']);
+    $address2 = $mysqli->real_escape_string($input['address2']);
+    $city = $mysqli->real_escape_string($input['city']);
+    $state = $mysqli->real_escape_string($input['state']);
+    $zip = $mysqli->real_escape_string($input['zip']);
+    $country = $mysqli->real_escape_string($input['country']);
+    $phone = $mysqli->real_escape_string($input['phone']);
+    $is_default = isset($input['is_default']) && $input['is_default'] ? 1 : 0;
+    
+    // If this is default, unset others
+    if ($is_default) {
+        $mysqli->query("UPDATE user_addresses SET is_default = 0 WHERE user_id = $user_id");
+    }
+    
+    // Insert address
+    $sql = "INSERT INTO user_addresses (
+        user_id, nickname, first_name, last_name, 
+        address1, address2, city, state, zip, 
+        country, phone, is_default, created_at
+    ) VALUES (
+        $user_id, '$nickname', '$first_name', '$last_name',
+        '$address1', '$address2', '$city', '$state', '$zip',
+        '$country', '$phone', $is_default, NOW()
+    )";
+    
+    if ($mysqli->query($sql)) {
+        die(json_encode(array(
+            'status' => 'success',
+            'message' => 'Address saved successfully',
+            'id' => $mysqli->insert_id
+        )));
+    } else {
+        die(json_encode(array(
+            'status' => 'error',
+            'message' => 'Failed to save address'
+        )));
+    }
+}
+
+// If no method matched
+die(json_encode(array('status' => 'error', 'message' => 'Method not supported')));
+
+$mysqli->close();
+?>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Precise Color Images</title>
+    <style>
+        body { font-family: Arial; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .test { background: #f9f9f9; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 8px; border: 1px solid #ddd; }
+        img { max-width: 150px; }
+        pre { background: #333; color: #fff; padding: 10px; overflow: auto; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <h1>Test Color-Specific Images</h1>
+    <p>This test verifies that the cart correctly fetches color-specific images exactly like detail.php does.</p>
+    
+    <div class="test">
+        <h3>Test Sequence:</h3>
+        <button onclick="step1()">Step 1: Clear Cart</button>
+        <button onclick="step2()">Step 2: Add Atlas (Blue)</button>
+        <button onclick="step3()">Step 3: Add Polished (Gray)</button>
+        <button onclick="step4()">Step 4: Show Cart</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        const baseUrl = 'http://localhost:3000/lg/API/v1/cart/cart.php';
+        
+        async function step1() {
+            try {
+                const response = await fetch(baseUrl + '?action=clear', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                document.getElementById('results').innerHTML = '<div class="test success">✓ Cart cleared</div>';
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<div class="test error">✗ Error: ' + error.message + '</div>';
+            }
+        }
+        
+        async function step2() {
+            try {
+                const response = await fetch(baseUrl + '?action=add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 1,
+                        size: 'LT',
+                        color: 'Atlas'
+                    })
+                });
+                const data = await response.json();
+                document.getElementById('results').innerHTML = '<div class="test success">✓ Added Atlas variant</div>';
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<div class="test error">✗ Error: ' + error.message + '</div>';
+            }
+        }
+        
+        async function step3() {
+            try {
+                const response = await fetch(baseUrl + '?action=add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 1,
+                        size: 'XLT',
+                        color: 'Polished'
+                    })
+                });
+                const data = await response.json();
+                document.getElementById('results').innerHTML = '<div class="test success">✓ Added Polished variant</div>';
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<div class="test error">✗ Error: ' + error.message + '</div>';
+            }
+        }
+        
+        async function step4() {
+            try {
+                const response = await fetch(baseUrl + '?action=get', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                let html = '<div class="test"><h3>Cart Contents:</h3>';
+                
+                if (data.data && data.data.cart_items) {
+                    html += '<table>';
+                    html += '<tr><th>Image</th><th>Product</th><th>Color</th><th>Size</th><th>Image File</th><th>Status</th></tr>';
+                    
+                    data.data.cart_items.forEach(item => {
+                        const isAtlas = item.color === 'Atlas';
+                        const isPolished = item.color === 'Polished';
+                        const imageFile = item.image ? item.image.split('/').pop() : '';
+                        
+                        // Check if image matches the color
+                        let status = '';
+                        if (isAtlas && imageFile.includes('CB35410') && !imageFile.includes('CB35410P')) {
+                            status = '<span class="success">✓ Correct Atlas image</span>';
+                        } else if (isPolished && imageFile.includes('CB35410P')) {
+                            status = '<span class="success">✓ Correct Polished image</span>';
+                        } else {
+                            status = '<span class="error">✗ Wrong image</span>';
+                        }
+                        
+                        html += `<tr>
+                            <td><img src="${item.image}" onerror="this.src='https://via.placeholder.com/150'"></td>
+                            <td>${item.name}</td>
+                            <td><strong>${item.color}</strong></td>
+                            <td>${item.size}</td>
+                            <td style="font-size: 10px;">${imageFile}</td>
+                            <td>${status}</td>
+                        </tr>`;
+                    });
+                    
+                    html += '</table>';
+                }
+                
+                html += '<h4>Raw JSON Response:</h4>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                html += '</div>';
+                
+                document.getElementById('results').innerHTML = html;
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<div class="test error">✗ Error: ' + error.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>

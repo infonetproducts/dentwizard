@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test - Dentwizard API</title>
+</head>
+<body>
+    <h1>Dentwizard API CORS Test</h1>
+    <button onclick="testAPI()">Test API Direct</button>
+    <button onclick="testProxy()">Test Through Proxy</button>
+    
+    <h2>Results:</h2>
+    <pre id="results"></pre>
+
+    <script>
+        async function testAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.textContent = 'Testing direct API call...\n';
+            
+            try {
+                const response = await fetch('https://dentwizard.lgstore.com/lg/API/products/list.php?limit=12&page=1');
+                const data = await response.json();
+                resultsDiv.textContent += 'SUCCESS! API returned data:\n' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultsDiv.textContent += 'CORS ERROR: ' + error.message + '\n';
+                resultsDiv.textContent += 'This means CORS needs to be fixed on the server.\n';
+                resultsDiv.textContent += '\nCheck browser console for details.';
+            }
+        }
+        
+        async function testProxy() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.textContent = 'Testing through proxy...\n';
+            
+            try {
+                const response = await fetch('/lg/API/products/list.php?limit=12&page=1');
+                const data = await response.json();
+                resultsDiv.textContent += 'SUCCESS! Proxy returned data:\n' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultsDiv.textContent += 'PROXY ERROR: ' + error.message + '\n';
+                resultsDiv.textContent += 'Check if proxy is configured correctly.';
+            }
+        }
+    </script>
+</body>
+</html>

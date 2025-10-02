@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick CORS Header Check</title>
+</head>
+<body>
+    <h1>Checking cors-test.php headers...</h1>
+    <div id="result"></div>
+    <script>
+        fetch('https://dentwizard.lgstore.com/lg/API/cors-test.php')
+            .then(response => {
+                // Check if Access-Control headers are present
+                const corsHeader = response.headers.get('Access-Control-Allow-Origin');
+                const methodsHeader = response.headers.get('Access-Control-Allow-Methods');
+                
+                if (corsHeader) {
+                    document.getElementById('result').innerHTML = 
+                        '<h2 style="color:green">✅ CORS HEADERS ARE WORKING!</h2>' +
+                        '<p>Access-Control-Allow-Origin: ' + corsHeader + '</p>' +
+                        '<p>Access-Control-Allow-Methods: ' + (methodsHeader || 'not set') + '</p>' +
+                        '<p><b>Now the headers need to be added to ALL API files!</b></p>';
+                } else {
+                    document.getElementById('result').innerHTML = 
+                        '<h2 style="color:red">❌ CORS headers NOT being sent</h2>' +
+                        '<p>The file runs but headers are being stripped.</p>' +
+                        '<p>Likely ModSecurity or server config blocking them.</p>';
+                }
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById('result').innerHTML += '<p>Response: ' + data + '</p>';
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = 
+                    '<h2 style="color:red">❌ CORS BLOCKED</h2>' +
+                    '<p>' + error + '</p>';
+            });
+    </script>
+</body>
+</html>

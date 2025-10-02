@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentWizard Cart API Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        h2 {
+            color: #444;
+            margin: 0;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status.success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status.error {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status.pending {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .cart-summary {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+        
+        .cart-item {
+            background: white;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 DentWizard Cart API Test Suite</h1>
+        
+        <div class="test-section">
+            <div class="test-header">
+                <h2>1. Test Add to Cart</h2>
+                <span id="add-status" class="status pending">Ready</span>
+            </div>
+            <p>Add the Embroidered Cutter & Buck Polo (ID: 91754) to cart with Atlas color and size XLT</p>
+            <button onclick="testAddToCart()">Add Product to Cart</button>
+            <div id="add-result" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-header">
+                <h2>2. Test Get Cart</h2>
+                <span id="get-status" class="status pending">Ready</span>
+            </div>
+            <p>Retrieve current cart contents and display summary</p>
+            <button onclick="testGetCart()">Get Cart Contents</button>
+            <div id="get-result" class="result"></div>
+            <div id="cart-display"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-header">
+                <h2>3. Test Full Cart Flow</h2>
+                <span id="flow-status" class="status pending">Ready</span>
+            </div>
+            <p>Test complete flow: Add multiple items → Get cart → Verify totals</p>
+            <div class="button-group">
+                <button onclick="testFullFlow()">Run Full Test</button>
+                <button onclick="clearResults()">Clear Results</button>
+            </div>
+            <div id="flow-result" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-header">
+                <h2>4. Session Information</h2>
+                <span id="session-status" class="status pending">No Session</span>
+            </div>
+            <p>Current session ID: <span id="session-id">None</span></p>
+            <button onclick="checkSession()">Check Session</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API/v1';
+        
+        // Get or create session ID
+        function getSessionId() {
+            let sessionId = localStorage.getItem('session_id');
+            if (!sessionId) {
+                sessionId = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem('session_id', sessionId);
+            }
+            return sessionId;
+        }
+        
+        // Test Add to Cart
+        async function testAddToCart() {
+            const statusEl = document.getElementById('add-status');
+            const resultEl = document.getElementById('add-result');
+            
+            statusEl.className = 'status pending';
+            statusEl.textContent = 'Testing...';
+            resultEl.textContent = 'Sending request...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/cart/add.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-ID': getSessionId()
+                    },
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 1,
+                        size: 'XLT',
+                        color: 'Atlas',
+                        variantId: 73020
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = 'Success';
+                    resultEl.className = 'result success';
+                    resultEl.textContent = '✅ Product added to cart!\n\n' + JSON.stringify(data, null, 2);
+                    
+                    // Store session ID if returned
+                    if (data.session_id) {
+                        localStorage.setItem('session_id', data.session_id);
+                    }
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = 'Failed';
+                    resultEl.className = 'result error';
+                    resultEl.textContent = '❌ Error: ' + (data.error || 'Failed to add to cart') + '\n\n' + JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'Error';
+                resultEl.className = 'result error';
+                resultEl.textContent = '❌ Network Error: ' + error.message;
+            }
+        }
+        
+        // Test Get Cart
+        async function testGetCart() {
+            const statusEl = document.getElementById('get-status');
+            const resultEl = document.getElementById('get-result');
+            const displayEl = document.getElementById('cart-display');
+            
+            statusEl.className = 'status pending';
+            statusEl.textContent = 'Testing...';
+            resultEl.textContent = 'Fetching cart...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/cart/get.php`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Session-ID': getSessionId()
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = 'Success';
+                    resultEl.className = 'result success';
+                    resultEl.textContent = '✅ Cart retrieved!\n\n' + JSON.stringify(data, null, 2);
+                    
+                    // Display cart summary
+                    if (data.data && data.data.summary) {
+                        const summary = data.data.summary;
+                        const items = data.data.items || [];
+                        
+                        displayEl.innerHTML = `
+                            <div class="cart-summary">
+                                <h3>Cart Summary</h3>
+                                <p><strong>Total Items:</strong> ${summary.total_items || 0}</p>
+                                <p><strong>Unique Items:</strong> ${summary.unique_items || 0}</p>
+                                <p><strong>Subtotal:</strong> $${(summary.subtotal || 0).toFixed(2)}</p>
+                                <p><strong>Tax:</strong> $${(summary.tax || 0).toFixed(2)}</p>
+                                <p><strong>Shipping:</strong> $${(summary.shipping || 0).toFixed(2)}</p>
+                                <p><strong>Total:</strong> $${(summary.total || 0).toFixed(2)}</p>
+                                
+                                ${items.length > 0 ? `
+                                    <h4>Cart Items:</h4>
+                                    <ul class="cart-items">
+                                        ${items.map(item => `
+                                            <li class="cart-item">
+                                                <div>
+                                                    <strong>${item.name}</strong><br>
+                                                    Size: ${item.size || 'N/A'}, Color: ${item.color || 'N/A'}<br>
+                                                    Qty: ${item.quantity} × $${item.price.toFixed(2)}
+                                                </div>
+                                                <div>
+                                                    <strong>$${item.total.toFixed(2)}</strong>
+                                                </div>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                ` : '<p>Cart is empty</p>'}
+                            </div>
+                        `;
+                    }
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = 'Failed';
+                    resultEl.className = 'result error';
+                    resultEl.textContent = '❌ Error: ' + (data.error || 'Failed to get cart') + '\n\n' + JSON.stringify(data, null, 2);
+                    displayEl.innerHTML = '';
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'Error';
+                resultEl.className = 'result error';
+                resultEl.textContent = '❌ Network Error: ' + error.message;
+                displayEl.innerHTML = '';
+            }
+        }
+        
+        // Test Full Flow
+        async function testFullFlow() {
+            const statusEl = document.getElementById('flow-status');
+            const resultEl = document.getElementById('flow-result');
+            
+            statusEl.className = 'status pending';
+            statusEl.textContent = 'Running...';
+            resultEl.textContent = 'Starting full cart flow test...\n';
+            
+            try {
+                // Step 1: Add first item
+                resultEl.textContent += '\n📦 Step 1: Adding Atlas variant...\n';
+                let response = await fetch(`${API_BASE}/cart/add.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-ID': getSessionId()
+                    },
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 2,
+                        size: 'LT',
+                        color: 'Atlas',
+                        variantId: 73020
+                    })
+                });
+                
+                let data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed to add Atlas variant');
+                resultEl.textContent += '✅ Atlas variant added (Qty: 2)\n';
+                
+                // Step 2: Add second item
+                resultEl.textContent += '\n📦 Step 2: Adding Polished variant...\n';
+                response = await fetch(`${API_BASE}/cart/add.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-ID': getSessionId()
+                    },
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 1,
+                        size: '2LT',
+                        color: 'Polished',
+                        variantId: 73021
+                    })
+                });
+                
+                data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed to add Polished variant');
+                resultEl.textContent += '✅ Polished variant added (Qty: 1)\n';
+                
+                // Step 3: Get cart and verify
+                resultEl.textContent += '\n🛒 Step 3: Retrieving cart...\n';
+                response = await fetch(`${API_BASE}/cart/get.php`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Session-ID': getSessionId()
+                    }
+                });
+                
+                data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed to get cart');
+                
+                const summary = data.data.summary;
+                const items = data.data.items || [];
+                
+                resultEl.textContent += `✅ Cart retrieved successfully!\n`;
+                resultEl.textContent += `\n📊 Cart Summary:\n`;
+                resultEl.textContent += `   Total Items: ${summary.total_items}\n`;
+                resultEl.textContent += `   Unique Items: ${summary.unique_items}\n`;
+                resultEl.textContent += `   Subtotal: $${summary.subtotal.toFixed(2)}\n`;
+                resultEl.textContent += `   Tax: $${summary.tax.toFixed(2)}\n`;
+                resultEl.textContent += `   Total: $${summary.total.toFixed(2)}\n`;
+                
+                statusEl.className = 'status success';
+                statusEl.textContent = 'Complete';
+                resultEl.className = 'result success';
+                
+                // Refresh cart display
+                testGetCart();
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'Failed';
+                resultEl.className = 'result error';
+                resultEl.textContent += '\n❌ Test failed: ' + error.message;
+            }
+        }
+        
+        // Check Session
+        function checkSession() {
+            const sessionId = getSessionId();
+            document.getElementById('session-id').textContent = sessionId;
+            document.getElementById('session-status').className = 'status success';
+            document.getElementById('session-status').textContent = 'Active';
+        }
+        
+        // Clear Results
+        function clearResults() {
+            document.getElementById('add-result').textContent = '';
+            document.getElementById('get-result').textContent = '';
+            document.getElementById('flow-result').textContent = '';
+            document.getElementById('cart-display').innerHTML = '';
+            
+            document.getElementById('add-status').className = 'status pending';
+            document.getElementById('add-status').textContent = 'Ready';
+            document.getElementById('get-status').className = 'status pending';
+            document.getElementById('get-status').textContent = 'Ready';
+            document.getElementById('flow-status').className = 'status pending';
+            document.getElementById('flow-status').textContent = 'Ready';
+        }
+        
+        // Initialize
+        window.onload = function() {
+            checkSession();
+        };
+    </script>
+</body>
+</html>

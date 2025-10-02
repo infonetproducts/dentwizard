@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Debug - Raw Response</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .test { background: #f0f0f0; padding: 10px; margin: 20px 0; }
+        pre { background: white; padding: 10px; border: 1px solid #ccc; overflow: auto; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>API Debug - Raw Responses</h1>
+    
+    <div class="test">
+        <h2>1. Products API - Raw Response</h2>
+        <button onclick="testProductsRaw()">Get Raw Response</button>
+        <pre id="products-raw"></pre>
+    </div>
+    
+    <div class="test">
+        <h2>2. Categories API - Raw Response</h2>
+        <button onclick="testCategoriesRaw()">Get Raw Response</button>
+        <pre id="categories-raw"></pre>
+    </div>
+
+    <script>
+        async function testProductsRaw() {
+            const pre = document.getElementById('products-raw');
+            pre.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('https://dentwizard.lgstore.com/lg/API/v1/products/list.php?limit=1');
+                const text = await response.text();
+                
+                pre.innerHTML = `
+Status: ${response.status}
+Headers: ${response.headers.get('content-type')}
+CORS: ${response.headers.get('access-control-allow-origin') || 'NOT SET'}
+
+Raw Response:
+${text}`;
+            } catch (error) {
+                pre.textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        async function testCategoriesRaw() {
+            const pre = document.getElementById('categories-raw');
+            pre.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('https://dentwizard.lgstore.com/lg/API/v1/categories/list.php?client_id=56');
+                const text = await response.text();
+                
+                pre.innerHTML = `
+Status: ${response.status}
+Headers: ${response.headers.get('content-type')}
+CORS: ${response.headers.get('access-control-allow-origin') || 'NOT SET'}
+
+Raw Response:
+${text}`;
+            } catch (error) {
+                pre.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

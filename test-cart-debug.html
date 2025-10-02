@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Cart Image Issue</title>
+    <style>
+        body { font-family: Arial; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        pre { background: #333; color: #fff; padding: 10px; overflow: auto; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        td, th { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f0f0f0; }
+        img { max-width: 100px; }
+    </style>
+</head>
+<body>
+    <h1>Debug Cart Color Images</h1>
+    
+    <h3>Step 1: Check what's in the database for product 91754</h3>
+    <button onclick="checkDatabase()">Check Color Variants in Database</button>
+    
+    <h3>Step 2: Test adding to cart</h3>
+    <button onclick="testAddPolished()">Add Polished to Cart</button>
+    
+    <h3>Step 3: Get current cart</h3>
+    <button onclick="getCurrentCart()">Show Current Cart</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function checkDatabase() {
+            // Direct call to a debug endpoint to check database
+            const html = `
+                <div class="result">
+                    <h4>Checking database for color variants...</h4>
+                    <p>We need to verify the item_group_options table has the correct data.</p>
+                    <p>The query should be:</p>
+                    <pre>
+SELECT option_id, display_name, value, color_image 
+FROM item_group_options 
+WHERE item_id = 91754 
+AND CID = 244</pre>
+                    <p>Expected to find "Atlas" and "Polished" with different color_image values.</p>
+                </div>
+            `;
+            document.getElementById('results').innerHTML = html;
+        }
+        
+        async function testAddPolished() {
+            try {
+                // First clear the cart
+                await fetch('http://localhost:3000/lg/API/v1/cart/cart.php?action=clear', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                // Add Polished variant
+                const response = await fetch('http://localhost:3000/lg/API/v1/cart/cart.php?action=add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 1,
+                        size: 'XLT',
+                        color: 'Polished'
+                    })
+                });
+                
+                const data = await response.json();
+                document.getElementById('results').innerHTML = `
+                    <div class="result">
+                        <h4>Added Polished Variant</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <div class="result" style="color: red;">
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function getCurrentCart() {
+            try {
+                const response = await fetch('http://localhost:3000/lg/API/v1/cart/cart.php?action=get', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                let html = '<div class="result"><h4>Current Cart Contents:</h4>';
+                
+                if (data.data && data.data.cart_items && data.data.cart_items.length > 0) {
+                    html += '<table>';
+                    html += '<tr><th>Image</th><th>Name</th><th>Size</th><th>Color</th><th>Image URL</th></tr>';
+                    
+                    data.data.cart_items.forEach(item => {
+                        html += `
+                            <tr>
+                                <td><img src="${item.image}" onerror="this.src='https://via.placeholder.com/100'"></td>
+                                <td>${item.name}</td>
+                                <td>${item.size}</td>
+                                <td>${item.color}</td>
+                                <td style="font-size: 10px; word-break: break-all;">${item.image}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += '</table>';
+                    
+                    // Check if Polished has correct image
+                    const polishedItem = data.data.cart_items.find(item => item.color === 'Polished');
+                    if (polishedItem) {
+                        const hasAtlasImage = polishedItem.image && polishedItem.image.includes('CB35410');
+                        const hasPolishedImage = polishedItem.image && polishedItem.image.includes('CB35410P');
+                        
+                        html += '<h4>Image Analysis:</h4>';
+                        if (hasAtlasImage && !hasPolishedImage) {
+                            html += '<p style="color: red;">❌ Wrong image! Showing Atlas image (CB35410) instead of Polished (should be different)</p>';
+                        } else if (hasPolishedImage) {
+                            html += '<p style="color: green;">✅ Correct! Showing Polished image</p>';
+                        } else {
+                            html += '<p>Image URL: ' + polishedItem.image + '</p>';
+                        }
+                    }
+                } else {
+                    html += '<p>Cart is empty</p>';
+                }
+                
+                html += '<h4>Raw JSON:</h4>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                html += '</div>';
+                
+                document.getElementById('results').innerHTML = html;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <div class="result" style="color: red;">
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

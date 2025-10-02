@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentWizard API Endpoint Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .endpoint-group {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .endpoint-group h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .endpoint {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .endpoint-url {
+            flex: 1;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .test-btn:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-weight: bold;
+            min-width: 100px;
+            text-align: center;
+        }
+        .status.success {
+            background: #28a745;
+            color: white;
+        }
+        .status.error {
+            background: #dc3545;
+            color: white;
+        }
+        .status.warning {
+            background: #ffc107;
+            color: #333;
+        }
+        .status.pending {
+            background: #6c757d;
+            color: white;
+        }
+        .response-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f1f3f4;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .response-preview.show {
+            display: block;
+        }
+        .test-all-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        .test-all-btn:hover {
+            background: #218838;
+        }
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+        .summary.show {
+            display: block;
+        }
+        .summary h3 {
+            margin-top: 0;
+        }
+        .fix-section {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .fix-section h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 DentWizard API Endpoint Tester</h1>
+    
+    <div class="fix-section">
+        <h3>⚠️ Current Status</h3>
+        <p><strong>Working:</strong> test.php endpoint ✅</p>
+        <p><strong>Issue:</strong> jwt.php has PHP 7+ syntax causing errors on PHP 5.6 server</p>
+        <p><strong>Fix:</strong> Upload the fixed jwt.php file from your local API/config/ folder</p>
+    </div>
+
+    <button class="test-all-btn" onclick="testAll()">🚀 Test All Endpoints</button>
+    
+    <div class="summary" id="summary">
+        <h3>📊 Test Summary</h3>
+        <p>✅ Working: <span id="working-count">0</span></p>
+        <p>❌ Failed: <span id="failed-count">0</span></p>
+        <p>⏳ Pending: <span id="pending-count">0</span></p>
+    </div>
+
+    <div class="endpoint-group">
+        <h2>🔧 System Check</h2>
+        <div class="endpoint" data-endpoint="test.php">
+            <span class="endpoint-url">/v1/test.php</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+    </div>
+
+    <div class="endpoint-group">
+        <h2>📦 Product Endpoints</h2>
+        <div class="endpoint" data-endpoint="products/list.php?client_id=244&limit=2">
+            <span class="endpoint-url">/v1/products/list.php?client_id=244&limit=2</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+        <div class="endpoint" data-endpoint="products/detail.php?id=1">
+            <span class="endpoint-url">/v1/products/detail.php?id=1</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+    </div>
+
+    <div class="endpoint-group">
+        <h2>🛒 Cart Endpoints</h2>
+        <div class="endpoint" data-endpoint="cart/get.php">
+            <span class="endpoint-url">/v1/cart/get.php</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+        <div class="endpoint" data-endpoint="cart/add.php">
+            <span class="endpoint-url">/v1/cart/add.php</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+    </div>
+
+    <div class="endpoint-group">
+        <h2>💳 Discount Endpoints</h2>
+        <div class="endpoint" data-endpoint="giftcard/validate.php">
+            <span class="endpoint-url">/v1/giftcard/validate.php</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+        <div class="endpoint" data-endpoint="coupon/validate.php">
+            <span class="endpoint-url">/v1/coupon/validate.php</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+    </div>
+
+    <div class="endpoint-group">
+        <h2>👤 User Endpoints</h2>
+        <div class="endpoint" data-endpoint="user/profile.php">
+            <span class="endpoint-url">/v1/user/profile.php</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+        <div class="endpoint" data-endpoint="user/budget.php">
+            <span class="endpoint-url">/v1/user/budget.php</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+    </div>
+
+    <div class="endpoint-group">
+        <h2>💰 Budget Endpoints</h2>
+        <div class="endpoint" data-endpoint="budget/check.php?user_id=1">
+            <span class="endpoint-url">/v1/budget/check.php?user_id=1</span>
+            <button class="test-btn" onclick="testEndpoint(this)">Test</button>
+            <span class="status pending">Not Tested</span>
+            <div class="response-preview"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API/v1';
+        
+        async function testEndpoint(button) {
+            const container = button.parentElement;
+            const endpoint = container.dataset.endpoint;
+            const statusEl = container.querySelector('.status');
+            const previewEl = container.querySelector('.response-preview');
+            
+            statusEl.textContent = 'Testing...';
+            statusEl.className = 'status warning';
+            
+            try {
+                const response = await fetch(`${API_BASE}/${endpoint}`);
+                const text = await response.text();
+                
+                if (response.ok) {
+                    statusEl.textContent = `✅ OK (${response.status})`;
+                    statusEl.className = 'status success';
+                    
+                    // Try to parse and format JSON
+                    try {
+                        const json = JSON.parse(text);
+                        previewEl.textContent = JSON.stringify(json, null, 2);
+                    } catch {
+                        previewEl.textContent = text.substring(0, 500);
+                    }
+                } else if (response.status === 500) {
+                    statusEl.textContent = `❌ Error (500)`;
+                    statusEl.className = 'status error';
+                    
+                    // Check if it's the PHP syntax error
+                    if (text.includes('Parse error') && text.includes('jwt.php')) {
+                        previewEl.textContent = 'PHP Parse Error in jwt.php - Upload the fixed version';
+                    } else {
+                        previewEl.textContent = text.substring(0, 500);
+                    }
+                } else {
+                    statusEl.textContent = `⚠️ ${response.status}`;
+                    statusEl.className = 'status warning';
+                    previewEl.textContent = text.substring(0, 500);
+                }
+                
+                previewEl.classList.add('show');
+                
+            } catch (error) {
+                statusEl.textContent = '❌ Network Error';
+                statusEl.className = 'status error';
+                previewEl.textContent = error.message;
+                previewEl.classList.add('show');
+            }
+            
+            updateSummary();
+        }
+        
+        async function testAll() {
+            const buttons = document.querySelectorAll('.test-btn');
+            document.getElementById('summary').classList.add('show');
+            
+            for (const button of buttons) {
+                await testEndpoint(button);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Small delay
+            }
+        }
+        
+        function updateSummary() {
+            const statuses = document.querySelectorAll('.status');
+            let working = 0, failed = 0, pending = 0;
+            
+            statuses.forEach(status => {
+                if (status.classList.contains('success')) working++;
+                else if (status.classList.contains('error')) failed++;
+                else if (status.classList.contains('pending')) pending++;
+            });
+            
+            document.getElementById('working-count').textContent = working;
+            document.getElementById('failed-count').textContent = failed;
+            document.getElementById('pending-count').textContent = pending;
+        }
+        
+        // Auto-test the main test endpoint on load
+        window.onload = function() {
+            const testBtn = document.querySelector('[data-endpoint="test.php"] .test-btn');
+            if (testBtn) {
+                testEndpoint(testBtn);
+            }
+        };
+    </script>
+</body>
+</html>

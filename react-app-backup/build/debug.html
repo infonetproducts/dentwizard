@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug CORS & Proxy - Dentwizard</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { margin: 5px; padding: 10px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Dentwizard API Debug Tool</h1>
+    
+    <h2>Test Different Approaches:</h2>
+    <button onclick="testDirect()">1. Test Direct API (CORS Check)</button>
+    <button onclick="testProxy()">2. Test Proxy (/lg/API)</button>
+    <button onclick="testFull()">3. Test Full URL in Proxy</button>
+    <button onclick="checkProxy()">4. Check If Proxy is Working</button>
+    
+    <h2>Configuration:</h2>
+    <div id="config"></div>
+    
+    <h2>Results:</h2>
+    <pre id="results"></pre>
+
+    <script>
+        // Show current configuration
+        document.getElementById('config').innerHTML = `
+            <p class="info">Current URL: ${window.location.href}</p>
+            <p class="info">API URL from .env: ${process.env.REACT_APP_API_URL || '/lg/API'}</p>
+        `;
+        
+        async function testDirect() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<span class="info">Testing direct API call to https://dentwizard.lgstore.com/lg/API/products/list.php...</span>\n';
+            
+            try {
+                const response = await fetch('https://dentwizard.lgstore.com/lg/API/products/list.php?limit=1', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultsDiv.innerHTML += '<span class="success">✅ SUCCESS! CORS is working!</span>\n';
+                    resultsDiv.innerHTML += 'Data: ' + JSON.stringify(data, null, 2);
+                } else {
+                    resultsDiv.innerHTML += '<span class="error">❌ Server returned error: ' + response.status + '</span>\n';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML += '<span class="error">❌ CORS BLOCKED: ' + error.message + '</span>\n';
+                resultsDiv.innerHTML += '<b>Fix needed: Add CORS headers to PHP files on server</b>\n';
+            }
+        }
+        
+        async function testProxy() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<span class="info">Testing through proxy /lg/API/products/list.php...</span>\n';
+            
+            try {
+                const response = await fetch('/lg/API/products/list.php?limit=1', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                resultsDiv.innerHTML += 'Response Status: ' + response.status + '\n';
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultsDiv.innerHTML += '<span class="success">✅ PROXY WORKING!</span>\n';
+                    resultsDiv.innerHTML += 'Data: ' + JSON.stringify(data, null, 2);
+                } else if (response.status === 404) {
+                    resultsDiv.innerHTML += '<span class="error">❌ 404 - Proxy not intercepting requests</span>\n';
+                    resultsDiv.innerHTML += 'The setupProxy.js might not be loaded correctly.\n';
+                } else {
+                    const text = await response.text();
+                    resultsDiv.innerHTML += '<span class="error">Error: ' + text + '</span>\n';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML += '<span class="error">❌ Error: ' + error.message + '</span>\n';
+            }
+        }
+        
+        async function testFull() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<span class="info">Testing with full localhost URL...</span>\n';
+            
+            const currentPort = window.location.port;
+            const url = `http://localhost:${currentPort}/lg/API/products/list.php?limit=1`;
+            resultsDiv.innerHTML += 'URL: ' + url + '\n';
+            
+            try {
+                const response = await fetch(url);
+                resultsDiv.innerHTML += 'Response Status: ' + response.status + '\n';
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultsDiv.innerHTML += '<span class="success">✅ SUCCESS!</span>\n';
+                } else {
+                    resultsDiv.innerHTML += '<span class="error">❌ Failed with status: ' + response.status + '</span>\n';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML += '<span class="error">Error: ' + error.message + '</span>\n';
+            }
+        }
+        
+        async function checkProxy() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<span class="info">Checking proxy configuration...</span>\n\n';
+            
+            resultsDiv.innerHTML += '1. setupProxy.js location: src/setupProxy.js ✅\n';
+            resultsDiv.innerHTML += '2. http-proxy-middleware installed ✅\n';
+            resultsDiv.innerHTML += '3. App restarted after adding proxy ✅\n\n';
+            
+            resultsDiv.innerHTML += '<b>If proxy is not working:</b>\n';
+            resultsDiv.innerHTML += '• Make sure you restarted the app completely\n';
+            resultsDiv.innerHTML += '• Check console for proxy debug messages\n';
+            resultsDiv.innerHTML += '• Try clearing browser cache\n';
+        }
+        
+        // Auto-run first test
+        window.onload = () => {
+            document.getElementById('results').innerHTML = 'Click a button to test...';
+        }
+    </script>
+</body>
+</html>

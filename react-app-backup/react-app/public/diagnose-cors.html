@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Diagnostic Tool</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #1a1a2e; color: white; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { color: #eee; text-align: center; }
+        .test-box { background: #16213e; padding: 20px; margin: 20px 0; border-radius: 10px; border: 1px solid #0f3460; }
+        .success { background: #1e5128; border-color: #4e9f3d; }
+        .error { background: #8b0000; border-color: #dc143c; }
+        .warning { background: #ff8c00; color: black; padding: 15px; border-radius: 10px; margin: 20px 0; }
+        button { padding: 10px 20px; margin: 5px; background: #e94560; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #c23b4e; }
+        pre { background: #0f1923; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .endpoint { font-family: monospace; color: #4fbdba; }
+        .method { display: inline-block; padding: 3px 8px; background: #e94560; border-radius: 3px; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 CORS Diagnostic Tool</h1>
+        
+        <div class="warning">
+            <strong>⚠️ IMPORTANT:</strong> Clear your browser cache first!<br>
+            Press Ctrl+Shift+Delete → Clear Cached Images and Files → Clear Data
+        </div>
+        
+        <div class="test-box">
+            <h2>Step 1: Test with Simple GET Request</h2>
+            <button onclick="testSimpleGet()">Test Simple GET</button>
+            <div id="simple-result"></div>
+        </div>
+        
+        <div class="test-box">
+            <h2>Step 2: Test Preflight OPTIONS Request</h2>
+            <button onclick="testOptions()">Test OPTIONS</button>
+            <div id="options-result"></div>
+        </div>
+        
+        <div class="test-box">
+            <h2>Step 3: Test with Authorization Header</h2>
+            <button onclick="testWithAuth()">Test with Auth</button>
+            <div id="auth-result"></div>
+        </div>
+        
+        <div class="test-box">
+            <h2>Step 4: Direct cURL Command (for your developer)</h2>
+            <pre>curl -I -X OPTIONS https://dentwizard.lgstore.com/lg/API/products/list.php \
+  -H "Origin: http://localhost:3009" \
+  -H "Access-Control-Request-Method: GET" \
+  -H "Access-Control-Request-Headers: Content-Type"</pre>
+            <p>This should return headers including Access-Control-Allow-Origin</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API';
+        
+        async function testSimpleGet() {
+            const resultDiv = document.getElementById('simple-result');
+            resultDiv.innerHTML = '<p>Testing simple GET request (no preflight)...</p>';
+            
+            try {
+                // Simple GET without custom headers
+                const response = await fetch(`${API_BASE}/products/list.php?limit=1`);
+                const data = await response.text();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <p>✅ Simple GET succeeded!</p>
+                        <p>Status: ${response.status}</p>
+                        <p>Headers:</p>
+                        <pre>${Array.from(response.headers.entries()).map(([k,v]) => `${k}: ${v}`).join('\n')}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <p>❌ Simple GET failed - CORS is completely blocked</p>
+                        <p>Error: ${error.message}</p>
+                        <p>This means the headers are NOT being sent at all.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testOptions() {
+            const resultDiv = document.getElementById('options-result');
+            resultDiv.innerHTML = '<p>Testing OPTIONS preflight request...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/products/list.php`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'Content-Type'
+                    }
+                });
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <p>✅ OPTIONS request succeeded!</p>
+                        <p>Status: ${response.status}</p>
+                        <p>The OPTIONS handler is working.</p>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <p>❌ OPTIONS request failed</p>
+                        <p>Error: ${error.message}</p>
+                        <p>The OPTIONS handler (line 4 of the CORS code) might not be working.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testWithAuth() {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = '<p>Testing with Authorization header (triggers preflight)...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/products/list.php?limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer test-token'
+                    }
+                });
+                
+                const data = await response.text();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <p>✅ Request with Auth header succeeded!</p>
+                        <p>Status: ${response.status}</p>
+                        <p>CORS is fully working!</p>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <p>❌ Request with Auth header failed</p>
+                        <p>Error: ${error.message}</p>
+                        <p>Preflight requests are being blocked.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto-run first test
+        window.onload = () => {
+            setTimeout(testSimpleGet, 500);
+        };
+    </script>
+</body>
+</html>

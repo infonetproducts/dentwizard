@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Profile API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px 20px; margin: 5px; }
+        pre { background: #f5f5f5; padding: 15px; border-radius: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h2>Test Profile API</h2>
+    <button onclick="testProfile()">Test profile-dev.php</button>
+    <button onclick="testProfileWithAuth()">Test profile.php (with auth)</button>
+    
+    <h3>Response:</h3>
+    <pre id="result">Click a button to test the API</pre>
+    
+    <script>
+        async function testProfile() {
+            const resultDiv = document.getElementById('result');
+            try {
+                const response = await fetch('/lg/API/v1/user/profile-dev.php', {
+                    credentials: 'include'
+                });
+                const text = await response.text();
+                console.log('Raw response:', text);
+                
+                try {
+                    const data = JSON.parse(text);
+                    resultDiv.innerHTML = '<span class="success">SUCCESS!</span>\n' + JSON.stringify(data, null, 2);
+                    
+                    // Check the structure
+                    if (data.success && data.data) {
+                        console.log('User ID:', data.data.user_id);
+                        console.log('Budget:', data.data.budget);
+                        console.log('Name:', data.data.name);
+                    }
+                } catch (e) {
+                    resultDiv.innerHTML = '<span class="error">JSON Parse Error:</span>\n' + text;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<span class="error">Network Error:</span>\n' + error.message;
+            }
+        }
+        
+        async function testProfileWithAuth() {
+            const resultDiv = document.getElementById('result');
+            try {
+                const response = await fetch('/lg/API/v1/user/profile.php', {
+                    credentials: 'include'
+                });
+                const text = await response.text();
+                console.log('Raw response:', text);
+                
+                try {
+                    const data = JSON.parse(text);
+                    resultDiv.innerHTML = '<span class="success">SUCCESS!</span>\n' + JSON.stringify(data, null, 2);
+                } catch (e) {
+                    resultDiv.innerHTML = '<span class="error">Response (not JSON):</span>\n' + text;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<span class="error">Network Error:</span>\n' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

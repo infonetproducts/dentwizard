@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .success { background: #d4edda; padding: 10px; margin: 10px 0; }
+        .error { background: #f8d7da; padding: 10px; margin: 10px 0; }
+        .product { border: 1px solid #ddd; padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Final API Test</h1>
+    <button onclick="testAll()">Test All APIs</button>
+    <div id="results"></div>
+
+    <script>
+        async function testAll() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h2>Testing...</h2>';
+            
+            // Test Products
+            try {
+                const prodResponse = await fetch('https://dentwizard.lgstore.com/lg/API/v1/products/list.php?limit=2');
+                const prodData = await prodResponse.json();
+                
+                if (prodData.success && prodData.data && prodData.data.length > 0) {
+                    results.innerHTML += '<div class="success">✅ PRODUCTS WORKING!</div>';
+                    results.innerHTML += '<div class="product">';
+                    results.innerHTML += 'Sample Product:<br>';
+                    results.innerHTML += 'Name: ' + prodData.data[0].name + '<br>';
+                    results.innerHTML += 'Price: $' + prodData.data[0].price + '<br>';
+                    results.innerHTML += 'Image: ' + prodData.data[0].image_url;
+                    results.innerHTML += '</div>';
+                } else {
+                    results.innerHTML += '<div class="error">❌ Products API issue</div>';
+                }
+            } catch (e) {
+                results.innerHTML += '<div class="error">❌ Products failed: ' + e.message + '</div>';
+            }
+            
+            // Test Categories
+            try {
+                const catResponse = await fetch('https://dentwizard.lgstore.com/lg/API/v1/categories/list.php');
+                const catData = await catResponse.json();
+                
+                if (catData.success && catData.data) {
+                    results.innerHTML += '<div class="success">✅ CATEGORIES WORKING!</div>';
+                    results.innerHTML += '<div>Found ' + catData.data.length + ' categories</div>';
+                } else {
+                    results.innerHTML += '<div class="error">❌ Categories API issue</div>';
+                }
+            } catch (e) {
+                results.innerHTML += '<div class="error">❌ Categories failed: ' + e.message + '</div>';
+            }
+            
+            // Test Cart
+            try {
+                const cartResponse = await fetch('https://dentwizard.lgstore.com/lg/API/v1/cart/get.php');
+                const cartData = await cartResponse.json();
+                
+                if (cartData.success) {
+                    results.innerHTML += '<div class="success">✅ CART WORKING!</div>';
+                } else {
+                    results.innerHTML += '<div class="error">❌ Cart API issue</div>';
+                }
+            } catch (e) {
+                results.innerHTML += '<div class="error">❌ Cart failed: ' + e.message + '</div>';
+            }
+            
+            results.innerHTML += '<h2>All tests complete!</h2>';
+        }
+    </script>
+</body>
+</html>

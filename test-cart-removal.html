@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Cart Removal</title>
+    <style>
+        body { font-family: Arial; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; margin: 5px; }
+        .result { background: #f9f9f9; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        pre { background: #333; color: #fff; padding: 10px; overflow: auto; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Test Cart Removal</h1>
+    
+    <button onclick="clearCart()">1. Clear Cart</button>
+    <button onclick="addTwoItems()">2. Add Two Items</button>
+    <button onclick="getCart()">3. Show Cart</button>
+    <button onclick="removeFirstItem()">4. Remove First Item Only</button>
+    <button onclick="getCart()">5. Show Cart Again</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        const baseUrl = 'http://localhost:3000/lg/API/v1/cart/cart.php';
+        let firstItemId = null;
+        
+        async function clearCart() {
+            const response = await fetch(baseUrl + '?action=clear', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            const data = await response.json();
+            document.getElementById('results').innerHTML = '<div class="result success">Cart cleared</div>';
+        }
+        
+        async function addTwoItems() {
+            // Add Atlas
+            await fetch(baseUrl + '?action=add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    product_id: 91754,
+                    quantity: 1,
+                    size: 'LT',
+                    color: 'Atlas'
+                })
+            });
+            
+            // Add Polished
+            await fetch(baseUrl + '?action=add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    product_id: 91754,
+                    quantity: 1,
+                    size: 'XLT',
+                    color: 'Polished'
+                })
+            });
+            
+            document.getElementById('results').innerHTML = '<div class="result success">Added 2 items (Atlas and Polished)</div>';
+        }
+        
+        async function getCart() {
+            const response = await fetch(baseUrl + '?action=get', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            
+            let html = '<div class="result"><h3>Cart Contents:</h3>';
+            if (data.data && data.data.cart_items && data.data.cart_items.length > 0) {
+                html += '<ul>';
+                data.data.cart_items.forEach((item, idx) => {
+                    if (idx === 0) firstItemId = item.id;
+                    html += '<li>ID: ' + item.id + ' | Color: ' + item.color + ' | Size: ' + item.size + '</li>';
+                });
+                html += '</ul>';
+                html += '<p>Total items: ' + data.data.cart_items.length + '</p>';
+            } else {
+                html += '<p>Cart is empty</p>';
+            }
+            html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            html += '</div>';
+            
+            document.getElementById('results').innerHTML = html;
+        }
+        
+        async function removeFirstItem() {
+            if (!firstItemId) {
+                document.getElementById('results').innerHTML = '<div class="result error">No item ID found. Show cart first.</div>';
+                return;
+            }
+            
+            console.log('Removing item with ID:', firstItemId);
+            
+            const response = await fetch(baseUrl + '?action=update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    item_id: firstItemId,
+                    quantity: 0
+                })
+            });
+            
+            const data = await response.json();
+            document.getElementById('results').innerHTML = '<div class="result success">Attempted to remove item: ' + firstItemId + '</div>';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+# QUICK FIX REFERENCE - CORS Issue
+
+## THE PROBLEM
+```
+❌ React App (localhost:3005) → BLOCKED → API (dentwizard.lgstore.com)
+```
+
+## THE FIX (Add to EVERY PHP file in /lg/API/)
+```php
+<?php
+// Add these 4 lines to the TOP of EVERY PHP file
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Session-ID");
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { exit(); }
+
+// Your existing PHP code continues here...
+```
+
+## FILES TO MODIFY (All in /lg/API/)
+✏️ products/list.php
+✏️ products/detail.php
+✏️ categories/list.php
+✏️ cart/get.php
+✏️ cart/add.php
+✏️ cart/update.php
+✏️ cart/remove.php
+✏️ orders/create.php
+✏️ orders/my-orders.php
+✏️ user/profile.php
+✏️ user/addresses.php
+
+## TEST IT
+1. Upload test-cors.php to /lg/API/
+2. Visit: https://dentwizard.lgstore.com/lg/API/test-cors.php
+3. See "CORS is working correctly!" = ✅ SUCCESS
+
+## THAT'S IT! 🎉

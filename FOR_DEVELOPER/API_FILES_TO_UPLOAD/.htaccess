@@ -1,0 +1,46 @@
+# CORS Configuration for Apache Server
+# Place this file in /lg/API/ directory
+
+# Enable CORS headers for all requests
+<IfModule mod_headers.c>
+    # Allow requests from any origin (change for production)
+    Header always set Access-Control-Allow-Origin "*"
+    
+    # Allowed HTTP methods
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    
+    # Allowed request headers
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, X-Session-ID"
+    
+    # Allow credentials
+    Header always set Access-Control-Allow-Credentials "true"
+    
+    # Cache preflight requests
+    Header always set Access-Control-Max-Age "3600"
+</IfModule>
+
+# Handle OPTIONS preflight requests
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Force UTF-8 encoding
+AddDefaultCharset UTF-8
+
+# PHP settings (if allowed by hosting provider)
+<IfModule mod_php7.c>
+    # Display errors for debugging (disable in production)
+    php_flag display_errors on
+    php_value error_reporting E_ALL
+</IfModule>
+
+<IfModule mod_php8.c>
+    # Display errors for debugging (disable in production)
+    php_flag display_errors on
+    php_value error_reporting E_ALL
+</IfModule>

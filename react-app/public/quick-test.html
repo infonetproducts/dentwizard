@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Quick Test</title>
+</head>
+<body>
+    <h1>Testing CORS...</h1>
+    <div id="result"></div>
+    <script>
+        fetch('https://dentwizard.lgstore.com/lg/API/products/list.php?limit=1')
+            .then(r => {
+                document.getElementById('result').innerHTML = '<h2 style="color:green">✅ CORS IS WORKING!</h2>';
+                return r.json();
+            })
+            .then(data => {
+                document.getElementById('result').innerHTML += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(e => {
+                document.getElementById('result').innerHTML = '<h2 style="color:red">❌ CORS STILL BLOCKED</h2><p>' + e + '</p>';
+            });
+    </script>
+</body>
+</html>

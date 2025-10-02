@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Cart Data</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px 20px; margin: 5px; }
+        pre { background: #f5f5f5; padding: 15px; }
+    </style>
+</head>
+<body>
+    <h2>Check Cart Data</h2>
+    <button onclick="checkCart()">Check Cart Contents</button>
+    <pre id="result"></pre>
+    
+    <script>
+        async function checkCart() {
+            try {
+                const response = await fetch('/lg/API/v1/cart/cart.php?action=get', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                const resultDiv = document.getElementById('result');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                
+                // Highlight logo data
+                if (data.data && data.data.items) {
+                    data.data.items.forEach((item, index) => {
+                        console.log(`Item ${index + 1}:`, {
+                            name: item.name,
+                            size: item.size,
+                            color: item.color,
+                            logo: item.logo || 'NOT FOUND'
+                        });
+                    });
+                }
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

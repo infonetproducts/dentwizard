@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Cart State</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        button { padding: 10px 20px; margin: 5px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        .result { margin: 15px 0; padding: 15px; background: #f5f5f5; border-radius: 5px; white-space: pre-wrap; }
+        .error { background: #ffebee; }
+        .success { background: #e8f5e9; }
+    </style>
+</head>
+<body>
+    <h1>Debug Cart State</h1>
+    
+    <button onclick="addItem()">1. Add Item to Cart</button>
+    <button onclick="getCart()">2. Get Cart</button>
+    <button onclick="checkSession()">3. Check Session</button>
+    <button onclick="clearSession()">4. Clear Session & Try Again</button>
+    
+    <div id="result" class="result">Ready...</div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API/v1/cart/cart.php';
+        
+        async function addItem() {
+            const result = document.getElementById('result');
+            result.textContent = 'Adding item...\n\n';
+            
+            // Use same session ID as React app if available
+            const sessionId = localStorage.getItem('session_id');
+            
+            const response = await fetch(API_BASE + '?action=add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Session-ID': sessionId || ''
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    product_id: 91754,
+                    quantity: 1,
+                    size: 'XLT', 
+                    color: 'Atlas'
+                })
+            });
+            
+            const data = await response.json();
+            result.textContent += 'Add Response:\n' + JSON.stringify(data, null, 2);
+            result.className = data.success ? 'result success' : 'result error';
+            
+            // Check if session is being set
+            const cookies = document.cookie;
+            result.textContent += '\n\nCookies: ' + cookies;
+        }
+        
+        async function getCart() {
+            const result = document.getElementById('result');
+            result.textContent = 'Getting cart...\n\n';
+            
+            const sessionId = localStorage.getItem('session_id');
+            
+            const response = await fetch(API_BASE + '?action=get', {
+                credentials: 'include',
+                headers: {
+                    'X-Session-ID': sessionId || ''
+                }
+            });
+            
+            const data = await response.json();
+            result.textContent += 'Get Response:\n' + JSON.stringify(data, null, 2);
+            
+            if (data.data && data.data.items) {
+                result.textContent += '\n\n✅ Items in cart: ' + data.data.items.length;
+            } else {
+                result.textContent += '\n\n❌ No items found';
+            }
+            
+            result.className = 'result';
+        }
+        
+        function checkSession() {
+            const result = document.getElementById('result');
+            const sessionId = localStorage.getItem('session_id');
+            const cookies = document.cookie;
+            
+            result.textContent = 'Session Info:\n';
+            result.textContent += 'LocalStorage session_id: ' + (sessionId || 'None') + '\n';
+            result.textContent += 'Cookies: ' + (cookies || 'None') + '\n';
+            result.textContent += '\nPHP Session Cookie (PHPSESSID): ';
+            
+            const phpSession = cookies.split('; ').find(row => row.startsWith('PHPSESSID'));
+            result.textContent += phpSession || 'Not found';
+        }
+        
+        async function clearSession() {
+            const result = document.getElementById('result');
+            
+            // Clear cart on server
+            await fetch(API_BASE + '?action=clear', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            
+            // Clear local storage
+            localStorage.removeItem('session_id');
+            
+            // Clear cookies
+            document.cookie.split(";").forEach(c => {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+            
+            result.textContent = 'Session cleared. Try adding to cart again.';
+            result.className = 'result';
+        }
+    </script>
+</body>
+</html>

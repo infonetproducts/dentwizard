@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>✅ CORS Verification - Dentwizard</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h1 { 
+            color: #333; 
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .test-btn:hover { 
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .success {
+            background: #48bb78;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            animation: slideIn 0.5s;
+        }
+        .error {
+            background: #f56565;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #4299e1;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        pre {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status-success { background: #48bb78; color: white; }
+        .status-error { background: #f56565; color: white; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 CORS Verification Tool</h1>
+        
+        <div class="info">
+            <strong>Testing API at:</strong> https://dentwizard.lgstore.com/lg/API/
+        </div>
+        
+        <div class="test-grid">
+            <button class="test-btn" onclick="testEndpoint('products/list.php?limit=5')">Test Products</button>
+            <button class="test-btn" onclick="testEndpoint('categories/list.php')">Test Categories</button>
+            <button class="test-btn" onclick="testEndpoint('cart/get.php')">Test Cart</button>
+            <button class="test-btn" onclick="testAll()">Test All Endpoints</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API';
+        let allResults = [];
+        
+        async function testEndpoint(endpoint) {
+            const resultsDiv = document.getElementById('results');
+            const testId = Date.now();
+            
+            // Add loading message
+            resultsDiv.innerHTML = `<div class="info">⏳ Testing ${endpoint}...</div>` + resultsDiv.innerHTML;
+            
+            try {
+                const startTime = performance.now();
+                const response = await fetch(`${API_BASE}/${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer mock-token-development'
+                    }
+                });
+                const endTime = performance.now();
+                const responseTime = (endTime - startTime).toFixed(2);
+                
+                const contentType = response.headers.get('content-type');
+                let data;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+                
+                if (response.ok) {
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            ✅ <strong>${endpoint}</strong>
+                            <span class="status-badge status-success">CORS WORKING</span>
+                            <br>Response Time: ${responseTime}ms | Status: ${response.status}
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2).substring(0, 500)}${JSON.stringify(data).length > 500 ? '...' : ''}</pre>
+                    ` + resultsDiv.innerHTML.replace(/<div class="info">⏳.*?<\/div>/, '');
+                    
+                    allResults.push({endpoint, status: 'success', time: responseTime});
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="error">
+                            ⚠️ <strong>${endpoint}</strong>
+                            <span class="status-badge status-error">HTTP ${response.status}</span>
+                            <br>Server returned an error (but CORS is working!)
+                        </div>
+                        <pre>${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</pre>
+                    ` + resultsDiv.innerHTML.replace(/<div class="info">⏳.*?<\/div>/, '');
+                    
+                    allResults.push({endpoint, status: 'error', code: response.status});
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        ❌ <strong>${endpoint}</strong>
+                        <span class="status-badge status-error">CORS BLOCKED</span>
+                        <br>Error: ${error.message}
+                        <br><br><strong>Action Required:</strong> Check if CORS headers are added to this endpoint.
+                    </div>
+                ` + resultsDiv.innerHTML.replace(/<div class="info">⏳.*?<\/div>/, '');
+                
+                allResults.push({endpoint, status: 'cors_error'});
+            }
+        }
+        
+        async function testAll() {
+            const endpoints = [
+                'products/list.php?limit=5',
+                'categories/list.php',
+                'cart/get.php',
+                'products/detail.php?id=1'
+            ];
+            
+            document.getElementById('results').innerHTML = '<div class="info">🔄 Running comprehensive test...</div>';
+            
+            for (const endpoint of endpoints) {
+                await testEndpoint(endpoint);
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            // Summary
+            const working = allResults.filter(r => r.status === 'success').length;
+            const errors = allResults.filter(r => r.status === 'error').length;
+            const blocked = allResults.filter(r => r.status === 'cors_error').length;
+            
+            document.getElementById('results').innerHTML = `
+                <div class="${blocked === 0 ? 'success' : 'error'}">
+                    <h3>📊 Test Summary</h3>
+                    ✅ Working: ${working} endpoints<br>
+                    ⚠️ Server Errors: ${errors} endpoints<br>
+                    ❌ CORS Blocked: ${blocked} endpoints<br><br>
+                    ${blocked === 0 ? '🎉 <strong>CORS is fully configured!</strong>' : '⚠️ <strong>Some endpoints still need CORS headers added.</strong>'}
+                </div>
+            ` + document.getElementById('results').innerHTML;
+        }
+        
+        // Auto-test on load
+        window.onload = () => {
+            testEndpoint('products/list.php?limit=5');
+        };
+    </script>
+</body>
+</html>

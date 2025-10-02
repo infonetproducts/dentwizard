@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Product Tax Code</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .test { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { background: #e7f5e7; }
+        .error { background: #ffe7e7; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f0f0f0; padding: 10px; overflow-x: auto; }
+        input { padding: 8px; margin: 10px; width: 200px; }
+        .info { background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Test Product Tax Code</h1>
+    
+    <div class="info">
+        <strong>Default SKU:</strong> BCK01168 (The polo shirt you added tax_code to)<br>
+        <strong>Purpose:</strong> Check if tax_code field exists in product data
+    </div>
+    
+    <div class="test">
+        <h2>1. Test Product Detail API</h2>
+        <input type="text" id="sku" value="BCK01168" placeholder="Enter SKU">
+        <button onclick="testProductBySKU()">Test Product by SKU</button>
+        <div id="product-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>2. Test Product by ID</h2>
+        <input type="text" id="product-id" value="91754" placeholder="Enter Product ID">
+        <button onclick="testProductByID()">Test Product by ID</button>
+        <div id="product-id-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>3. Test Cart Items</h2>
+        <button onclick="testCart()">Check Cart for Tax Codes</button>
+        <div id="cart-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API/v1';
+        const LOCAL_BASE = 'http://localhost:3000/lg/API/v1';
+        
+        // Try local first for development
+        const BASE_URL = window.location.hostname === 'localhost' ? LOCAL_BASE : API_BASE;
+        
+        async function testProductBySKU() {
+            const resultDiv = document.getElementById('product-result');
+            const sku = document.getElementById('sku').value;
+            resultDiv.innerHTML = 'Searching for SKU: ' + sku + '...';
+            
+            // First try to find product by SKU
+            try {
+                const response = await fetch(`${BASE_URL}/products/search.php?sku=${sku}`);
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    data = { error: 'Invalid JSON', raw: text };
+                }
+                
+                if (data.products && data.products.length > 0) {
+                    const product = data.products[0];
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>Product Found!</strong><br>
+                            <strong>SKU:</strong> ${sku}<br>
+                            <strong>Product ID:</strong> ${product.product_id || product.id || 'N/A'}<br>
+                            <strong>Name:</strong> ${product.product_name || product.name || 'N/A'}<br>
+                            <strong style="color: red;">Tax Code:</strong> ${product.tax_code || 'NOT FOUND'}<br>
+                            <strong>Raw Data:</strong>
+                            <pre>${JSON.stringify(product, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    // Try detail endpoint with ID 91754 (known product)
+                    testProductByID();
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testProductByID() {
+            const resultDiv = document.getElementById('product-id-result');
+            const productId = document.getElementById('product-id').value;
+            resultDiv.innerHTML = 'Testing product ID: ' + productId + '...';
+            
+            try {
+                const response = await fetch(`${BASE_URL}/products/detail.php?id=${productId}`);
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    data = { error: 'Invalid JSON', raw: text };
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="${data.status === 'success' ? 'success' : 'error'}">
+                        <strong>Status:</strong> ${response.status}<br>
+                        <strong>Product ID:</strong> ${productId}<br>
+                        <strong>Name:</strong> ${data.product?.product_name || 'N/A'}<br>
+                        <strong style="color: red;">Tax Code:</strong> ${data.product?.tax_code || 'NOT FOUND'}<br>
+                        <strong>SKU:</strong> ${data.product?.sku || 'N/A'}<br>
+                        <hr>
+                        <strong>All Fields in Product:</strong>
+                        <pre>${JSON.stringify(data.product || data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testCart() {
+            const resultDiv = document.getElementById('cart-result');
+            resultDiv.innerHTML = 'Fetching cart...';
+            
+            try {
+                const response = await fetch(`${BASE_URL}/cart/cart.php`);
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    data = { error: 'Invalid JSON', raw: text };
+                }
+                
+                let itemsHtml = '';
+                if (data.data && data.data.items) {
+                    data.data.items.forEach((item, index) => {
+                        const hasTaxCode = item.tax_code ? '✅' : '❌';
+                        itemsHtml += `
+                            <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
+                                <strong>Item ${index + 1}:</strong> ${item.product_name || 'Unknown'}<br>
+                                <strong>Product ID:</strong> ${item.product_id}<br>
+                                <strong>Tax Code:</strong> ${hasTaxCode} ${item.tax_code || 'MISSING'}<br>
+                            </div>
+                        `;
+                    });
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="${data.status === 'success' ? 'success' : 'error'}">
+                        <strong>Cart Items:</strong><br>
+                        ${itemsHtml || 'No items in cart'}
+                        <hr>
+                        <strong>Raw Cart Data:</strong>
+                        <pre>${JSON.stringify(data.data?.items || data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Test on load
+        window.onload = () => {
+            console.log('Testing endpoints at:', BASE_URL);
+            console.log('Product BCK01168 should have tax_code: 20010');
+        };
+    </script>
+</body>
+</html>

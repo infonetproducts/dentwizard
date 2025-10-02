@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Tax API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .test { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { background: #e7f5e7; }
+        .error { background: #ffe7e7; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f0f0f0; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Debug Tax API Issue</h1>
+    
+    <div class="test">
+        <h2>1. Test with GET (to see if file exists)</h2>
+        <button onclick="testTaxGET()">Test GET Request</button>
+        <div id="get-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>2. Test OPTIONS (CORS preflight)</h2>
+        <button onclick="testTaxOPTIONS()">Test OPTIONS</button>
+        <div id="options-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>3. Test POST with minimal data</h2>
+        <button onclick="testTaxMinimal()">Test Minimal POST</button>
+        <div id="minimal-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>4. Test POST with full data</h2>
+        <button onclick="testTaxFull()">Test Full POST</button>
+        <div id="full-result"></div>
+    </div>
+
+    <script>
+        const TAX_URL = 'https://dentwizard.lgstore.com/lg/API/v1/tax/calculate.php';
+        
+        async function testTaxGET() {
+            const resultDiv = document.getElementById('get-result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch(TAX_URL, {
+                    method: 'GET'
+                });
+                
+                const text = await response.text();
+                resultDiv.innerHTML = `
+                    <div class="${response.ok ? 'success' : 'error'}">
+                        <strong>Status:</strong> ${response.status}<br>
+                        <strong>Status Text:</strong> ${response.statusText}<br>
+                        <strong>Response:</strong>
+                        <pre>${text.substring(0, 500)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testTaxOPTIONS() {
+            const resultDiv = document.getElementById('options-result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch(TAX_URL, {
+                    method: 'OPTIONS'
+                });
+                
+                resultDiv.innerHTML = `
+                    <div class="${response.ok ? 'success' : 'error'}">
+                        <strong>Status:</strong> ${response.status}<br>
+                        <strong>Headers:</strong><br>
+                        Access-Control-Allow-Origin: ${response.headers.get('Access-Control-Allow-Origin')}<br>
+                        Access-Control-Allow-Methods: ${response.headers.get('Access-Control-Allow-Methods')}<br>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testTaxMinimal() {
+            const resultDiv = document.getElementById('minimal-result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch(TAX_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to_state: 'CA',
+                        to_zip: '90210',
+                        amount: 100
+                    })
+                });
+                
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    data = text;
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="${response.ok ? 'success' : 'error'}">
+                        <strong>Status:</strong> ${response.status}<br>
+                        <strong>Response:</strong>
+                        <pre>${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Network Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testTaxFull() {
+            const resultDiv = document.getElementById('full-result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch(TAX_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to_state: 'CA',
+                        to_zip: '90210',
+                        to_city: 'Beverly Hills',
+                        amount: 100,
+                        shipping: 10,
+                        line_items: [{
+                            id: '1',
+                            quantity: 1,
+                            unit_price: 100,
+                            product_tax_code: '20010'
+                        }]
+                    })
+                });
+                
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    data = text;
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="${response.ok ? 'success' : 'error'}">
+                        <strong>Status:</strong> ${response.status}<br>
+                        <strong>Response:</strong>
+                        <pre>${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</pre>
+                        ${data.tax ? `<br><strong>Calculated Tax:</strong> $${data.tax.toFixed(2)}` : ''}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Network Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

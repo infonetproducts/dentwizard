@@ -1,0 +1,26 @@
+// Add this button component to your shipping form in CheckoutPage.js
+// Place it near the shipping address header
+
+<Button 
+  variant="text"
+  size="small"
+  onClick={() => {
+    // Clear saved address and reset form
+    sessionStorage.removeItem('checkoutShipping');
+    setShippingInfo({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: '',
+      address2: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: 'US'
+    });
+  }}
+  sx={{ ml: 2 }}
+>
+  Clear Saved Address
+</Button>

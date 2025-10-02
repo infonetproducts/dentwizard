@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart Error Debug</title>
+    <style>
+        body { font-family: Arial; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #fee; color: #c00; }
+        pre { background: #333; color: #fff; padding: 10px; overflow: auto; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>Debug Cart PHP Error</h1>
+    
+    <button onclick="testRawAdd()">Test Raw Add Response</button>
+    <button onclick="testRawGet()">Test Raw Get Response</button>
+    <button onclick="testDirectAPI()">Test Direct API Call</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function testRawAdd() {
+            try {
+                const response = await fetch('http://localhost:3000/lg/API/v1/cart/cart.php?action=add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 1,
+                        size: 'XLT',
+                        color: 'Atlas'
+                    })
+                });
+                
+                const text = await response.text();
+                document.getElementById('results').innerHTML = `
+                    <div class="result">
+                        <h4>Add Cart - Raw Response:</h4>
+                        <p>Status: ${response.status}</p>
+                        <p>Headers: ${response.headers.get('content-type')}</p>
+                        <pre>${text}</pre>
+                        <h4>Attempting JSON parse:</h4>
+                        <pre>${tryParseJSON(text)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <div class="result error">
+                        <h4>Network Error:</h4>
+                        <pre>${error.message}</pre>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testRawGet() {
+            try {
+                const response = await fetch('http://localhost:3000/lg/API/v1/cart/cart.php?action=get', {
+                    credentials: 'include'
+                });
+                
+                const text = await response.text();
+                document.getElementById('results').innerHTML = `
+                    <div class="result">
+                        <h4>Get Cart - Raw Response:</h4>
+                        <p>Status: ${response.status}</p>
+                        <p>Headers: ${response.headers.get('content-type')}</p>
+                        <pre>${text}</pre>
+                        <h4>Attempting JSON parse:</h4>
+                        <pre>${tryParseJSON(text)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <div class="result error">
+                        <h4>Network Error:</h4>
+                        <pre>${error.message}</pre>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testDirectAPI() {
+            // Test direct to API without proxy
+            try {
+                const response = await fetch('https://dentwizard.lgstore.com/lg/API/v1/cart/cart.php?action=get', {
+                    credentials: 'include'
+                });
+                
+                const text = await response.text();
+                document.getElementById('results').innerHTML = `
+                    <div class="result">
+                        <h4>Direct API Call (no proxy) - Raw Response:</h4>
+                        <p>Status: ${response.status}</p>
+                        <pre>${text.substring(0, 500)}...</pre>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <div class="result error">
+                        <h4>Direct API Error:</h4>
+                        <pre>${error.message}</pre>
+                    </div>
+                `;
+            }
+        }
+        
+        function tryParseJSON(text) {
+            try {
+                const json = JSON.parse(text);
+                return JSON.stringify(json, null, 2);
+            } catch (e) {
+                return 'JSON Parse Error: ' + e.message + '\n\nThis usually means PHP has an error or warning output before the JSON.';
+            }
+        }
+    </script>
+</body>
+</html>

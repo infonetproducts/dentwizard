@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Cart.php Single Handler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 10px 5px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛒 Test cart.php Single Handler</h1>
+    
+    <div class="info">
+        <strong>Instructions:</strong>
+        <br>1. Upload cart.php to: /lg/API/v1/cart/cart.php
+        <br>2. Click the buttons below to test each function
+        <br>3. All functions go through the single cart.php file with different actions
+    </div>
+    
+    <h2>Test Cart Operations:</h2>
+    
+    <button onclick="testAdd()">1. Add Product to Cart</button>
+    <button onclick="testGet()">2. Get Cart Contents</button>
+    <button onclick="testUpdate()">3. Update Quantity</button>
+    <button onclick="testClear()">4. Clear Cart</button>
+    <button onclick="testFlow()">5. Test Full Flow</button>
+    
+    <div id="result" class="result">Ready to test...</div>
+
+    <script>
+        const API_BASE = 'https://dentwizard.lgstore.com/lg/API/v1/cart/cart.php';
+        
+        async function testAdd() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'Adding product to cart...';
+            
+            try {
+                const response = await fetch(API_BASE + '?action=add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 1,
+                        size: 'XLT',
+                        color: 'Atlas'
+                    })
+                });
+                
+                const text = await response.text();
+                
+                try {
+                    const json = JSON.parse(text);
+                    resultEl.textContent = '✅ Add to Cart Result:\n\n' + JSON.stringify(json, null, 2);
+                    resultEl.className = json.success ? 'result success' : 'result error';
+                } catch (e) {
+                    resultEl.textContent = '❌ Response is not valid JSON:\n' + text;
+                    resultEl.className = 'result error';
+                }
+            } catch (error) {
+                resultEl.textContent = '❌ Network Error: ' + error.message;
+                resultEl.className = 'result error';
+            }
+        }
+        
+        async function testGet() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'Getting cart contents...';
+            
+            try {
+                const response = await fetch(API_BASE + '?action=get');
+                const text = await response.text();
+                
+                try {
+                    const json = JSON.parse(text);
+                    resultEl.textContent = '✅ Get Cart Result:\n\n' + JSON.stringify(json, null, 2);
+                    resultEl.className = 'result success';
+                    
+                    // Display cart summary
+                    if (json.data && json.data.summary) {
+                        const s = json.data.summary;
+                        resultEl.textContent += '\n\n📊 Cart Summary:\n';
+                        resultEl.textContent += `Items: ${s.total_items}\n`;
+                        resultEl.textContent += `Subtotal: $${s.subtotal}\n`;
+                        resultEl.textContent += `Tax: $${s.tax}\n`;
+                        resultEl.textContent += `Shipping: $${s.shipping}\n`;
+                        resultEl.textContent += `Total: $${s.total}`;
+                    }
+                } catch (e) {
+                    resultEl.textContent = '❌ Response is not valid JSON:\n' + text;
+                    resultEl.className = 'result error';
+                }
+            } catch (error) {
+                resultEl.textContent = '❌ Network Error: ' + error.message;
+                resultEl.className = 'result error';
+            }
+        }
+        
+        async function testUpdate() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'First adding item, then updating quantity...';
+            
+            // First add an item
+            await fetch(API_BASE + '?action=add', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    product_id: 91754,
+                    quantity: 1,
+                    size: 'LT',
+                    color: 'Polished'
+                })
+            });
+            
+            // Then update it
+            try {
+                const response = await fetch(API_BASE + '?action=update', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        item_id: '91754_LT_Polished',
+                        quantity: 3
+                    })
+                });
+                
+                const text = await response.text();
+                const json = JSON.parse(text);
+                resultEl.textContent = '✅ Update Quantity Result:\n\n' + JSON.stringify(json, null, 2);
+                resultEl.className = 'result success';
+            } catch (error) {
+                resultEl.textContent = '❌ Error: ' + error.message;
+                resultEl.className = 'result error';
+            }
+        }
+        
+        async function testClear() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'Clearing cart...';
+            
+            try {
+                const response = await fetch(API_BASE + '?action=clear', {
+                    method: 'POST'
+                });
+                
+                const text = await response.text();
+                const json = JSON.parse(text);
+                resultEl.textContent = '✅ Clear Cart Result:\n\n' + JSON.stringify(json, null, 2);
+                resultEl.className = 'result success';
+            } catch (error) {
+                resultEl.textContent = '❌ Error: ' + error.message;
+                resultEl.className = 'result error';
+            }
+        }
+        
+        async function testFlow() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'Running full test flow...\n\n';
+            
+            try {
+                // 1. Clear cart
+                resultEl.textContent += '1️⃣ Clearing cart...\n';
+                await fetch(API_BASE + '?action=clear', {method: 'POST'});
+                
+                // 2. Add first item
+                resultEl.textContent += '2️⃣ Adding Atlas XLT...\n';
+                await fetch(API_BASE + '?action=add', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 2,
+                        size: 'XLT',
+                        color: 'Atlas'
+                    })
+                });
+                
+                // 3. Add second item
+                resultEl.textContent += '3️⃣ Adding Polished LT...\n';
+                await fetch(API_BASE + '?action=add', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        product_id: 91754,
+                        quantity: 1,
+                        size: 'LT',
+                        color: 'Polished'
+                    })
+                });
+                
+                // 4. Get final cart
+                resultEl.textContent += '4️⃣ Getting final cart...\n\n';
+                const response = await fetch(API_BASE + '?action=get');
+                const json = await response.json();
+                
+                resultEl.textContent += '✅ Final Cart:\n' + JSON.stringify(json, null, 2);
+                resultEl.className = 'result success';
+            } catch (error) {
+                resultEl.textContent += '\n❌ Error: ' + error.message;
+                resultEl.className = 'result error';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -236,8 +236,15 @@ const cartSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(addToCart.fulfilled, (state) => {
+      .addCase(addToCart.fulfilled, (state, action) => {
         state.loading = false;
+        // Update cart state with returned data
+        if (action.payload.data) {
+          state.items = action.payload.data.items || [];
+          if (action.payload.data.summary) {
+            state.summary = action.payload.data.summary;
+          }
+        }
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.loading = false;

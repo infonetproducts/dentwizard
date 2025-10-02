@@ -1,11 +1,12 @@
 <?php
 /**
  * CORS Headers Configuration
+ * PHP 5.6 Compatible Version
  * Add this to the top of EVERY API endpoint file
  */
 
 // Allow from specific origins (more secure)
-$allowed_origins = [
+$allowed_origins = array(
     'http://localhost:3000',
     'http://localhost:3001', 
     'http://localhost:3002',
@@ -18,18 +19,21 @@ $allowed_origins = [
     'https://dentwizard-prod.onrender.com',  // Production Render deployment
     'https://dentwizardapparel.com',  // Production custom domain
     'https://www.dentwizardapparel.com'  // Production custom domain (www)
-];
+);
 
 // Try to determine origin from HTTP_ORIGIN or HTTP_REFERER
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$origin = '';
+if (isset($_SERVER['HTTP_ORIGIN'])) {
+    $origin = $_SERVER['HTTP_ORIGIN'];
+}
 
 // If no origin header, try to extract from referer
-if (empty($origin) && !empty($_SERVER['HTTP_REFERER'])) {
+if (empty($origin) && isset($_SERVER['HTTP_REFERER']) && !empty($_SERVER['HTTP_REFERER'])) {
     $referer = $_SERVER['HTTP_REFERER'];
     $parsed = parse_url($referer);
     if ($parsed) {
         $origin = $parsed['scheme'] . '://' . $parsed['host'];
-        if (isset($parsed['port']) && !in_array($parsed['port'], [80, 443])) {
+        if (isset($parsed['port']) && !in_array($parsed['port'], array(80, 443))) {
             $origin .= ':' . $parsed['port'];
         }
     }

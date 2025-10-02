@@ -1,6 +1,30 @@
 <?php
 // Single Cart Handler - Avoids problematic add.php filename
+
+// Configure session for cross-origin requests (PHP 5.6 compatible)
+// SameSite=None requires session_set_cookie_params
+if (version_compare(PHP_VERSION, '7.3.0', '>=')) {
+    session_set_cookie_params(array(
+        'lifetime' => 86400,
+        'path' => '/',
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'None'
+    ));
+} else {
+    // PHP 5.6 - 7.2: Use older syntax
+    session_set_cookie_params(86400, '/', '', true, true);
+    // For PHP < 7.3, we need to manually set SameSite via header after session_start()
+}
+
 session_start();
+
+// For PHP < 7.3, manually set SameSite=None via header
+if (version_compare(PHP_VERSION, '7.3.0', '<')) {
+    $sessionName = session_name();
+    $sessionId = session_id();
+    header('Set-Cookie: ' . $sessionName . '=' . $sessionId . '; path=/; secure; HttpOnly; SameSite=None', false);
+}
 
 // Include centralized CORS configuration
 require_once __DIR__ . '/../../cors.php';

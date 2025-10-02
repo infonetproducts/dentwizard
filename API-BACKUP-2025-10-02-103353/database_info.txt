@@ -1,0 +1,1165 @@
+===========================================
+DATABASE STRUCTURE DOCUMENTATION
+Generated: 2025-09-17 15:11:32
+===========================================
+
+✓ Database connection successful
+Database: rwaf
+
+===========================================
+ALL TABLES IN DATABASE
+===========================================
+1. BusinessCardData
+2. BusinessCardData_29-july-2024
+3. Category
+4. ClientLogos
+5. Clients
+6. Clients_7_jan_2025
+7. Departments
+8. FormCategoryLink
+9. InvoiceItems
+10. Invoices
+11. Items
+12. Items_22_august_2024
+13. Items_29_july_2024
+14. Items_2_july_2025
+15. JDEOrders
+16. JDEOrdersDone
+17. JDERecipients
+18. OrderItems
+19. OrderItemsFoo
+20. OrderItems_18_august_2025
+21. OrderItems_20-sep-2025
+22. OrderItems_2_july_2025
+23. OrderItems_req
+24. OrderShipmentItems
+25. OrderShipments
+26. OrderShipments_2_july_2025
+27. OrderVendorView
+28. Orders
+29. Orders_2_july_2025
+30. Orders_31-dec-2024
+31. Orders_req
+32. PointsPlusOrders
+33. PointsPlusOrdersDone
+34. Users
+35. Users-4-july-2024
+36. Users_26-august-2025
+37. Users_4_Nove_2024
+38. VendorClient
+39. Vendors
+40. bcTemplate
+41. bcTemplateFields
+42. bctemplatePrice
+43. brand_logos
+44. brand_logos_items
+45. budget_balance_history
+46. budget_history
+47. budget_log_all_trans
+48. budget_log_all_trans_detail
+49. category_group
+50. clients_shipping_options
+51. contact_us
+52. custom_script_data
+53. custom_template
+54. custom_template_detail
+55. dashboard_setting
+56. dealer_codes
+57. discount_codes
+58. doc_details
+59. document_subcategories
+60. documnet_categories
+61. editor_img
+62. employee_promo_code
+63. export_log
+64. gift_card_transaction_history
+65. groups
+66. inventory_kit_log
+67. ip_block
+68. item_available_order
+69. item_group_options
+70. item_groups
+71. item_location
+72. item_log
+73. item_package_options
+74. item_packages
+75. item_price
+76. items_additional_image
+77. items_range_price
+78. items_range_price_options
+79. items_req
+80. items_xls1
+81. kit_item_detail
+82. line_pdf
+83. log_history
+84. log_history_detail
+85. lord_excel_user_changes
+86. lord_invoice
+87. lot_number_detail
+88. lumise_bugs
+89. lumise_categories
+90. lumise_categories_reference
+91. lumise_cliparts
+92. lumise_designs
+93. lumise_fonts
+94. lumise_guests
+95. lumise_languages
+96. lumise_order_products
+97. lumise_orders
+98. lumise_printings
+99. lumise_products
+100. lumise_sessions
+101. lumise_settings
+102. lumise_shapes
+103. lumise_shares
+104. lumise_tags
+105. lumise_tags_reference
+106. lumise_templates
+107. maildoc_log
+108. multiple_shipping_address
+109. new_user
+110. news_letter_user
+111. order_item_brand
+112. order_log_history
+113. order_log_history_detail
+114. order_log_item_history_detail
+115. order_shipstations
+116. orders_filter
+117. organization
+118. organization_contact
+119. pa_zipcodes
+120. price_log
+121. promo_codes
+122. quote_OrderItems
+123. quote_Orders
+124. quote_additional_price
+125. quote_required_file_link
+126. quote_required_note_file
+127. required_file_link
+128. required_note_file
+129. sales_channel
+130. sales_channel_account
+131. save_cart
+132. save_cart_item_detail
+133. send_file
+134. send_file_detail
+135. source_code_backup_folders
+136. store_district_manager
+137. store_district_manager_shops
+138. store_location
+139. store_numbers
+140. stripe_customer_profiles
+141. tmpi
+142. transaction_detail
+143. user_budget_log_history
+144. user_budget_log_history_detail
+145. user_delete_lord
+146. user_details
+147. warehouse_address
+148. zip_code_sale_tax_rate
+
+Total tables: 148
+
+===========================================
+TABLE: Items
+===========================================
+
+COLUMNS:
+--------
+ID                   | Type: int(11)              | Null: NO  | Key: PRI | Default: NULL
+FormID               | Type: varchar(35)          | Null: NO  | Key: MUL | Default: NULL
+OtherIDs             | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+Description          | Type: text                 | Null: NO  | Key:     | Default: NULL
+PDFFile              | Type: varchar(150)         | Null: NO  | Key:     | Default: NULL
+ImageFile            | Type: varchar(100)         | Null: NO  | Key:     | Default: NULL
+Starred              | Type: tinyint(4)           | Null: NO  | Key:     | Default: NULL
+RevisionOrderQTY     | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+RevisionDate         | Type: date                 | Null: NO  | Key:     | Default: NULL
+Pages                | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+PrintInstructions    | Type: varchar(150)         | Null: NO  | Key:     | Default: NULL
+comments             | Type: varchar(220)         | Null: NO  | Key:     | Default: NULL
+PageMakerFile        | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+ContactName          | Type: varchar(60)          | Null: NO  | Key:     | Default: NULL
+ContactEmail         | Type: text                 | Null: NO  | Key:     | Default: NULL
+MIS                  | Type: tinyint(4)           | Null: NO  | Key:     | Default: NULL
+MaxQTY               | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+MinQTY               | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+S1                   | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+S2                   | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+S3                   | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+S4                   | Type: varchar(40)          | Null: NO  | Key:     | Default: NULL
+Price                | Type: decimal(14,6)        | Null: YES | Key:     | Default: NULL
+Cost                 | Type: decimal(14,6)        | Null: YES | Key:     | Default: NULL
+FormType             | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+InventoryQuantity    | Type: int(11)              | Null: YES | Key:     | Default: NULL
+InventoryLog         | Type: text                 | Null: NO  | Key:     | Default: NULL
+InventoryAlertQuantity | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+UserID               | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+VendorID             | Type: int(11)              | Null: NO  | Key: MUL | Default: NULL
+CID                  | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+item_type            | Type: enum('standard','custom','on_demand') | Null: NO  | Key:     | Default: NULL
+custom_file_name     | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+preview_width        | Type: varchar(10)          | Null: NO  | Key:     | Default: NULL
+item_location        | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+high_res_pdf         | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+high_res_pdf_display | Type: varchar(10)          | Null: NO  | Key:     | Default: NULL
+item_price_type      | Type: enum('standard_price','multi_quantity_price') | Null: NO  | Key:     | Default: NULL
+price_multi          | Type: varchar(1024)        | Null: NO  | Key:     | Default: NULL
+keywords             | Type: text                 | Null: NO  | Key:     | Default: NULL
+available_order      | Type: varchar(5)           | Null: NO  | Key:     | Default: NULL
+require_file_upload  | Type: varchar(5)           | Null: NO  | Key:     | Default: NULL
+visibility           | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+status_item          | Type: enum('Y','N','D')    | Null: NO  | Key:     | Default: NULL
+high_res_pdf_template | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+low_res_pdf_template | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+starting_preview_image | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+item_title           | Type: text                 | Null: NO  | Key:     | Default: NULL
+sale_tax             | Type: decimal(10,2)        | Null: NO  | Key:     | Default: NULL
+is_apply_sale_tax    | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_require_lot_number | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_kit               | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+kit_inventory_type   | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+point_value          | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+created_dtm          | Type: datetime             | Null: NO  | Key:     | Default: NULL
+add_by_user_id       | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+dealer_lookup        | Type: varchar(5)           | Null: NO  | Key:     | Default: NULL
+brand_logo           | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+brand_logo_value     | Type: longtext             | Null: NO  | Key:     | Default: NULL
+virtual_tire_wall    | Type: varchar(5)           | Null: NO  | Key:     | Default: NULL
+bill_code            | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+replacement_panel_price | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+virtual_wall_type    | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+item_number_virtual  | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+status_log           | Type: text                 | Null: NO  | Key:     | Default: NULL
+is_cubicle_item      | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+budget_deduction     | Type: varchar(5)           | Null: NO  | Key:     | Default: NULL
+clone_from_item_id   | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+inventory_management | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+add_period           | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+brand_standard       | Type: text                 | Null: NO  | Key:     | Default: NULL
+back_site_pdf        | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+variable_headline    | Type: text                 | Null: NO  | Key:     | Default: NULL
+bullet_count         | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+bullet_value         | Type: text                 | Null: NO  | Key:     | Default: NULL
+item_logo_ids        | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+is_add_custom_name   | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+custom_name_price    | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+is_add_custom_number | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+custom_number_price  | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+is_number_validation | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+is_name_validation   | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+old_item_id          | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+sale_price           | Type: decimal(14,6)        | Null: NO  | Key:     | Default: NULL
+sale_start_date      | Type: date                 | Null: NO  | Key:     | Default: NULL
+sale_end_date        | Type: date                 | Null: NO  | Key:     | Default: NULL
+is_add_comment_box   | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+add_disclaimer_option | Type: text                 | Null: NO  | Key:     | Default: NULL
+is_enable_sale_item  | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+percentage_off_item  | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+sale_type            | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+is_special_comment   | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_whiteboard        | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+item_number_whiteboard | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+is_remove_price      | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+cus_msg_not_avai     | Type: text                 | Null: NO  | Key:     | Default: NULL
+item_lot             | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+item_exp_date        | Type: date                 | Null: NO  | Key:     | Default: NULL
+is_feature_on_home_page | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+home_page_item_order | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+product_family_code  | Type: text                 | Null: NO  | Key:     | Default: NULL
+product_class_desc   | Type: text                 | Null: NO  | Key:     | Default: NULL
+lot                  | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+weight_lbs           | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+weight_oz            | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+royalty_percentage   | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+royalty_type         | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+is_preview_image     | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+category_page_item_order | Type: varchar(40)          | Null: NO  | Key:     | Default: NULL
+tax_category         | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_generate_preview_disable | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+front_image          | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+back_image           | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+is_exclude_shipping_fee | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+product_tax_code     | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+
+Total rows: 83342
+
+SAMPLE DATA (First 2 rows):
+------------------------
+Row 1:
+  ID: 1
+  FormID: MTC-08
+  OtherIDs: 
+  Description: 
+  PDFFile: 
+  ImageFile: 
+  Starred: 0
+  RevisionOrderQTY: 0
+  RevisionDate: 0000-00-00
+  Pages: 0
+  PrintInstructions: 
+  comments: 
+  PageMakerFile: 
+  ContactName: STEVE
+  ContactEmail: 
+  MIS: 0
+  MaxQTY: 0
+  MinQTY: 0
+  S1: 
+  S2: 
+  S3: 
+  S4: 
+  Price: 65.000000
+  Cost: 0.000000
+  FormType: 
+  InventoryQuantity: 0
+  InventoryLog: Lauren Ott changed quantity by -4 (4)  on 03/03/20...
+  InventoryAlertQuantity: 0
+  UserID: 0
+  VendorID: 0
+  CID: 42
+  item_type: standard
+  custom_file_name: 
+  preview_width: 
+  item_location: 
+  high_res_pdf: 
+  high_res_pdf_display: 
+  item_price_type: standard_price
+  price_multi: 
+  keywords: MINI
+  available_order: yes
+  require_file_upload: no
+  visibility: 
+  status_item: N
+  high_res_pdf_template: 
+  low_res_pdf_template: 
+  starting_preview_image: 
+  item_title: MiNi- Performance Tire Insert \"ADRENALINE JUNKIE\...
+  sale_tax: 0.00
+  is_apply_sale_tax: 0
+  is_require_lot_number: 0
+  is_kit: 0
+  kit_inventory_type: 
+  point_value: 
+  created_dtm: 0000-00-00 00:00:00
+  add_by_user_id: 0
+  dealer_lookup: 
+  brand_logo: 0
+  brand_logo_value: 
+  virtual_tire_wall: no
+  bill_code: 
+  replacement_panel_price: 
+  virtual_wall_type: 
+  item_number_virtual: 
+  status_log: 
+  is_cubicle_item: 0
+  budget_deduction: 
+  clone_from_item_id: 
+  inventory_management: default-single-location
+  add_period: 
+  brand_standard: 
+  back_site_pdf: 
+  variable_headline: 
+  bullet_count: 0
+  bullet_value: 
+  item_logo_ids: 
+  is_add_custom_name: 0
+  custom_name_price: 0.00
+  is_add_custom_number: 0
+  custom_number_price: 0.00
+  is_number_validation: 
+  is_name_validation: 
+  old_item_id: 0
+  sale_price: 0.000000
+  sale_start_date: 0000-00-00
+  sale_end_date: 0000-00-00
+  is_add_comment_box: 
+  add_disclaimer_option: 
+  is_enable_sale_item: 0
+  percentage_off_item: 
+  sale_type: 
+  is_special_comment: 0
+  is_whiteboard: 
+  item_number_whiteboard: 
+  is_remove_price: 
+  cus_msg_not_avai: 
+  item_lot: 
+  item_exp_date: 0000-00-00
+  is_feature_on_home_page: 0
+  home_page_item_order: 
+  product_family_code: 
+  product_class_desc: 
+  lot: 
+  weight_lbs: 
+  weight_oz: 
+  royalty_percentage: 
+  royalty_type: Percentage
+  is_preview_image: 0
+  category_page_item_order: 
+  tax_category: 1
+  is_generate_preview_disable: 0
+  front_image: 
+  back_image: 
+  is_exclude_shipping_fee: 0
+  product_tax_code: 
+
+Row 2:
+  ID: 2
+  FormID: MTC-07
+  OtherIDs: 
+  Description: 
+  PDFFile: 
+  ImageFile: 
+  Starred: 0
+  RevisionOrderQTY: 0
+  RevisionDate: 0000-00-00
+  Pages: 0
+  PrintInstructions: 
+  comments: 
+  PageMakerFile: 
+  ContactName: STEVE
+  ContactEmail: 
+  MIS: 0
+  MaxQTY: 0
+  MinQTY: 0
+  S1: 
+  S2: 
+  S3: 
+  S4: 
+  Price: 0.000000
+  Cost: 0.000000
+  FormType: 
+  InventoryQuantity: 0
+  InventoryLog: Diane Dressner changed quantity by -2 on 07/18/201...
+  InventoryAlertQuantity: 0
+  UserID: 0
+  VendorID: 0
+  CID: 42
+  item_type: standard
+  custom_file_name: 
+  preview_width: 
+  item_location: 
+  high_res_pdf: 
+  high_res_pdf_display: 
+  item_price_type: standard_price
+  price_multi: 
+  keywords: MINI
+  available_order: yes
+  require_file_upload: no
+  visibility: 
+  status_item: N
+  high_res_pdf_template: 
+  low_res_pdf_template: 
+  starting_preview_image: 
+  item_title: MINI- ENJOYS COLD WEATHER
+  sale_tax: 0.00
+  is_apply_sale_tax: 0
+  is_require_lot_number: 0
+  is_kit: 0
+  kit_inventory_type: 
+  point_value: 
+  created_dtm: 0000-00-00 00:00:00
+  add_by_user_id: 0
+  dealer_lookup: 
+  brand_logo: 0
+  brand_logo_value: 
+  virtual_tire_wall: no
+  bill_code: 
+  replacement_panel_price: 
+  virtual_wall_type: 
+  item_number_virtual: 
+  status_log: 
+  is_cubicle_item: 0
+  budget_deduction: 
+  clone_from_item_id: 
+  inventory_management: default-single-location
+  add_period: 
+  brand_standard: 
+  back_site_pdf: 
+  variable_headline: 
+  bullet_count: 0
+  bullet_value: 
+  item_logo_ids: 
+  is_add_custom_name: 0
+  custom_name_price: 0.00
+  is_add_custom_number: 0
+  custom_number_price: 0.00
+  is_number_validation: 
+  is_name_validation: 
+  old_item_id: 0
+  sale_price: 0.000000
+  sale_start_date: 0000-00-00
+  sale_end_date: 0000-00-00
+  is_add_comment_box: 
+  add_disclaimer_option: 
+  is_enable_sale_item: 0
+  percentage_off_item: 
+  sale_type: 
+  is_special_comment: 0
+  is_whiteboard: 
+  item_number_whiteboard: 
+  is_remove_price: 
+  cus_msg_not_avai: 
+  item_lot: 
+  item_exp_date: 0000-00-00
+  is_feature_on_home_page: 0
+  home_page_item_order: 
+  product_family_code: 
+  product_class_desc: 
+  lot: 
+  weight_lbs: 
+  weight_oz: 
+  royalty_percentage: 
+  royalty_type: Percentage
+  is_preview_image: 0
+  category_page_item_order: 
+  tax_category: 3
+  is_generate_preview_disable: 0
+  front_image: 
+  back_image: 
+  is_exclude_shipping_fee: 0
+  product_tax_code: 
+
+
+===========================================
+TABLE: Category
+===========================================
+
+COLUMNS:
+--------
+ID                   | Type: int(11)              | Null: NO  | Key: PRI | Default: NULL
+ParentID             | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+Name                 | Type: varchar(40)          | Null: NO  | Key:     | Default: NULL
+Active               | Type: char(1)              | Null: YES | Key:     | Default: Y
+CID                  | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_featured_homepage | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+display_order        | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+old_cat_id           | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+display_type         | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+
+Total rows: 1692
+
+SAMPLE DATA (First 2 rows):
+------------------------
+Row 1:
+  ID: 1
+  ParentID: 0
+  Name: POP Kits
+  Active: Y
+  CID: 42
+  is_featured_homepage: 0
+  display_order: 0
+  old_cat_id: 0
+  display_type: 0
+
+Row 2:
+  ID: 1285
+  ParentID: 0
+  Name: Men's Apparel
+  Active: Y
+  CID: 90
+  is_featured_homepage: 1
+  display_order: 1
+  old_cat_id: 1219
+  display_type: 0
+
+
+===========================================
+TABLE: Users
+===========================================
+
+COLUMNS:
+--------
+ID                   | Type: int(11)              | Null: NO  | Key: PRI | Default: NULL
+Login                | Type: varchar(60)          | Null: NO  | Key:     | Default: NULL
+Password             | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+BillCode             | Type: int(11)              | Null: NO  | Key:     | Default: 1
+Name                 | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+Title                | Type: varchar(150)         | Null: NO  | Key:     | Default: NULL
+Email                | Type: varchar(60)          | Null: NO  | Key:     | Default: NULL
+Dept                 | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+ShipToName           | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+ShipToDept           | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+Phone                | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+Address1             | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+Address2             | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+City                 | Type: varchar(30)          | Null: NO  | Key:     | Default: NULL
+State                | Type: char(2)              | Null: NO  | Key:     | Default: NULL
+Zip                  | Type: varchar(15)          | Null: NO  | Key:     | Default: NULL
+FormCategoryIDs      | Type: text                 | Null: NO  | Key:     | Default: NULL
+VendorID             | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+AdminOpts            | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+Status               | Type: tinyint(4)           | Null: NO  | Key: MUL | Default: 2
+CID                  | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+SysAdmin             | Type: tinyint(4)           | Null: NO  | Key:     | Default: NULL
+Budget               | Type: decimal(8,2)         | Null: YES | Key:     | Default: NULL
+BudgetRenewDate      | Type: date                 | Null: YES | Key:     | Default: NULL
+BudgetPeriod         | Type: varchar(5)           | Null: NO  | Key:     | Default: NULL
+BudgetBalance        | Type: decimal(8,2)         | Null: YES | Key:     | Default: NULL
+BudgetApprover       | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+BudgetManager        | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+rwisthebest          | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+requisitions_approve_email | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+group_id             | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+required_password_reset | Type: varchar(5)           | Null: NO  | Key:     | Default: NULL
+country              | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+custom_order         | Type: tinyint(4)           | Null: NO  | Key:     | Default: NULL
+is_register          | Type: varchar(5)           | Null: NO  | Key:     | Default: NULL
+is_approve_user      | Type: tinyint(4)           | Null: NO  | Key:     | Default: NULL
+primary_approve      | Type: varchar(4)           | Null: NO  | Key:     | Default: NULL
+company              | Type: text                 | Null: NO  | Key:     | Default: NULL
+lord_contact         | Type: text                 | Null: NO  | Key:     | Default: NULL
+is_enable_custom_report | Type: varchar(5)           | Null: NO  | Key:     | Default: NULL
+is_virtual_admin     | Type: enum('N','Y')        | Null: NO  | Key:     | Default: NULL
+parent_user_id       | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_view_only         | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+restet_budget_balance_dtm | Type: datetime             | Null: NO  | Key:     | Default: NULL
+is_become_user_admin | Type: enum('N','Y')        | Null: NO  | Key:     | Default: NULL
+employee_type        | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+is_cubicle_order     | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_vendor_account    | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+vendor_id            | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+budget_balance_log   | Type: text                 | Null: NO  | Key:     | Default: NULL
+territory_number     | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+cost_center          | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+division             | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+supervisor           | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+role_position        | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+
+Total rows: 15021
+
+SAMPLE DATA (First 2 rows):
+------------------------
+Row 1:
+  ID: 4014
+  Login: Graham_Lewis@LORD.com
+  Password: 3Yw7y6Zk+/8=
+  BillCode: 1
+  Name: Graham Lewis
+  Title: 
+  Email: Graham_Lewis@LORD.com
+  Dept: 
+  ShipToName: 
+  ShipToDept: 
+  Phone: 
+  Address1: 
+  Address2: 
+  City: 
+  State: 
+  Zip: 
+  FormCategoryIDs: 
+  VendorID: 0
+  AdminOpts: 
+  Status: 2
+  CID: 44
+  SysAdmin: 0
+  Budget: 
+  BudgetRenewDate: 
+  BudgetPeriod: 
+  BudgetBalance: 
+  BudgetApprover: 
+  BudgetManager: 0
+  rwisthebest: 
+  requisitions_approve_email: 
+  group_id: 0
+  required_password_reset: 
+  country: United States
+  custom_order: 0
+  is_register: 1
+  is_approve_user: 0
+  primary_approve: 
+  company: LORD
+  lord_contact: 
+  is_enable_custom_report: 
+  is_virtual_admin: N
+  parent_user_id: 0
+  is_view_only: 0
+  restet_budget_balance_dtm: 0000-00-00 00:00:00
+  is_become_user_admin: N
+  employee_type: 
+  is_cubicle_order: 0
+  is_vendor_account: 0
+  vendor_id: 0
+  budget_balance_log: 
+  territory_number: 
+  cost_center: 
+  division: 
+  supervisor: 
+  role_position: 
+
+Row 2:
+  ID: 3037
+  Login: rick_diener
+  Password: w1GYYwjMIG0=
+  BillCode: 1
+  Name: Rick Diener
+  Title: 
+  Email: rick.diener@2lintech.com
+  Dept: 
+  ShipToName: 
+  ShipToDept: 
+  Phone: 407-493-8433
+  Address1: 
+  Address2: 
+  City: 
+  State: 
+  Zip: 
+  FormCategoryIDs: 
+  VendorID: 0
+  AdminOpts: 
+  Status: 2
+  CID: 44
+  SysAdmin: 0
+  Budget: 
+  BudgetRenewDate: 2016-01-01
+  BudgetPeriod: 
+  BudgetBalance: 
+  BudgetApprover: 
+  BudgetManager: 0
+  rwisthebest: 
+  requisitions_approve_email: 
+  group_id: 3
+  required_password_reset: Y
+  country: 
+  custom_order: 0
+  is_register: 
+  is_approve_user: 0
+  primary_approve: 
+  company: 
+  lord_contact: 
+  is_enable_custom_report: 
+  is_virtual_admin: N
+  parent_user_id: 0
+  is_view_only: 0
+  restet_budget_balance_dtm: 0000-00-00 00:00:00
+  is_become_user_admin: N
+  employee_type: 
+  is_cubicle_order: 0
+  is_vendor_account: 0
+  vendor_id: 0
+  budget_balance_log: 
+  territory_number: 
+  cost_center: 
+  division: 
+  supervisor: 
+  role_position: 
+
+
+===========================================
+TABLE: Orders
+===========================================
+
+COLUMNS:
+--------
+ID                   | Type: int(11)              | Null: NO  | Key: PRI | Default: NULL
+OrderID              | Type: varchar(35)          | Null: NO  | Key:     | Default: NULL
+OrderDate            | Type: datetime             | Null: NO  | Key: MUL | Default: NULL
+UserID               | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+UserLogin            | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+Email                | Type: varchar(60)          | Null: NO  | Key:     | Default: NULL
+Name                 | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+Dept                 | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+DueDate              | Type: date                 | Null: NO  | Key:     | Default: NULL
+Company              | Type: varchar(100)         | Null: NO  | Key:     | Default: NULL
+ShipToName           | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+ShipToDept           | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+Phone                | Type: varchar(20)          | Null: NO  | Key:     | Default: NULL
+Address1             | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+Address2             | Type: varchar(80)          | Null: NO  | Key:     | Default: NULL
+City                 | Type: varchar(30)          | Null: NO  | Key:     | Default: NULL
+State                | Type: char(2)              | Null: NO  | Key:     | Default: NULL
+Zip                  | Type: varchar(15)          | Null: NO  | Key:     | Default: NULL
+Notes                | Type: text                 | Null: NO  | Key:     | Default: NULL
+BillCode             | Type: tinyint(4)           | Null: NO  | Key:     | Default: NULL
+BillTo               | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+Status               | Type: varchar(30)          | Null: NO  | Key: MUL | Default: new
+ShipDate             | Type: datetime             | Null: NO  | Key: MUL | Default: NULL
+CID                  | Type: int(11)              | Null: NO  | Key: MUL | Default: NULL
+ClientOrderNumber    | Type: varchar(30)          | Null: NO  | Key:     | Default: NULL
+country              | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+is_custom_order      | Type: varchar(10)          | Null: NO  | Key:     | Default: NULL
+custom_desc          | Type: text                 | Null: NO  | Key:     | Default: NULL
+item_due_date        | Type: date                 | Null: NO  | Key:     | Default: NULL
+name_of_shipping_address | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+invoiced             | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+is_create_from_quote | Type: varchar(50)          | Null: NO  | Key:     | Default: NULL
+po_number            | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+reorder_by_admin     | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+sales_rep            | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+order_place_by_name  | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+is_deleted_order     | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+points_plus_order_number | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+dealer_number        | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+jde_order_number     | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+payment_method       | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+bmw_email_body       | Type: longtext             | Null: NO  | Key:     | Default: NULL
+requestor            | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+cost_center          | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+tax_type             | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+txt_file_mailbox     | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+old_status           | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+status_change_dtm    | Type: datetime             | Null: NO  | Key:     | Default: NULL
+is_on_demand_item    | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_other_item        | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+created_from_order_type | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+mailbox_file_name    | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+previous_budget_amount | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+Requested_Delivery_Date | Type: date                 | Null: NO  | Key:     | Default: NULL
+Exp_Month            | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+Exp_Year             | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+CVV                  | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+stripe_transation_id | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+order_total          | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+shipping_charge      | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+is_manual_order      | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_update_budget     | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+is_gift_order        | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+order_sub_status     | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+is_lord_invoice_export | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+requestor_email      | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+total_sale_tax       | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+dealer_code          | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+dealer_code_discount_amount | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+internal_notes       | Type: text                 | Null: NO  | Key:     | Default: NULL
+promo_code           | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+delivery_method      | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+sales_channel        | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+territory_number     | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+address_3            | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+order_create_file_name | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+sale_discount_total  | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+ship_via             | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+ship_via_other       | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+is_modern_site_order | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+shipped_status       | Type: varchar(100)         | Null: NO  | Key:     | Default: NULL
+shipping_method      | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+due_date             | Type: date                 | Null: NO  | Key:     | Default: NULL
+customer_po          | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+import_by_user_id    | Type: int(11)              | Null: NO  | Key:     | Default: NULL
+employee_id          | Type: int(11)              | Null: YES | Key:     | Default: NULL
+employee_discount    | Type: decimal(8,2)         | Null: YES | Key:     | Default: NULL
+employee_discount_price | Type: decimal(8,2)         | Null: YES | Key:     | Default: NULL
+gift_discount_amount | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+total_price_before_discount | Type: decimal(8,2)         | Null: NO  | Key:     | Default: NULL
+player_name          | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+team_name            | Type: varchar(255)         | Null: NO  | Key:     | Default: NULL
+stripe_paymentIntentId | Type: varchar(512)         | Null: NO  | Key:     | Default: NULL
+is_api_create        | Type: int(11)              | Null: YES | Key:     | Default: NULL
+payroll_order        | Type: int(11)              | Null: YES | Key:     | Default: NULL
+payroll_amount       | Type: decimal(8,2)         | Null: YES | Key:     | Default: NULL
+
+Total rows: 98104
+
+SAMPLE DATA (First 2 rows):
+------------------------
+Row 1:
+  ID: 926
+  OrderID: 0219-135523-1293
+  OrderDate: 2013-02-19 13:55:23
+  UserID: 1293
+  UserLogin: 
+  Email: dbellissimo@dealertire.com
+  Name: David Bellissimo
+  Dept: 
+  DueDate: 0000-00-00
+  Company: 
+  ShipToName: David Bellissimo
+  ShipToDept: 
+  Phone: 
+  Address1: 548 BROAD STREET
+  Address2: 
+  City: BELOIT
+  State: WI
+  Zip: 53511
+  Notes: ship to Bill Fox/Parts Manager.
+  BillCode: 5
+  BillTo: 
+  Status: cancelled
+  ShipDate: 0000-00-00 00:00:00
+  CID: 42
+  ClientOrderNumber: 
+  country: 
+  is_custom_order: 
+  custom_desc: 
+  item_due_date: 0000-00-00
+  name_of_shipping_address: 
+  invoiced: 
+  is_create_from_quote: 
+  po_number: 
+  reorder_by_admin: 0
+  sales_rep: 
+  order_place_by_name: 
+  is_deleted_order: 0
+  points_plus_order_number: 
+  dealer_number: 
+  jde_order_number: 
+  payment_method: 
+  bmw_email_body: 
+  requestor: 
+  cost_center: 
+  tax_type: 
+  txt_file_mailbox: 
+  old_status: 
+  status_change_dtm: 0000-00-00 00:00:00
+  is_on_demand_item: 0
+  is_other_item: 0
+  created_from_order_type: 
+  mailbox_file_name: 
+  previous_budget_amount: 0.00
+  Requested_Delivery_Date: 0000-00-00
+  Exp_Month: 
+  Exp_Year: 
+  CVV: 
+  stripe_transation_id: 
+  order_total: 0.00
+  shipping_charge: 0.00
+  is_manual_order: 0
+  is_update_budget: 0
+  is_gift_order: 0
+  order_sub_status: 
+  is_lord_invoice_export: 0
+  requestor_email: 
+  total_sale_tax: 0.00
+  dealer_code: 
+  dealer_code_discount_amount: 0.00
+  internal_notes: 
+  promo_code: 
+  delivery_method: 
+  sales_channel: 
+  territory_number: 
+  address_3: 
+  order_create_file_name: 
+  sale_discount_total: 0.00
+  ship_via: 0
+  ship_via_other: 
+  is_modern_site_order: 0
+  shipped_status: 
+  shipping_method: 
+  due_date: 0000-00-00
+  customer_po: 
+  import_by_user_id: 0
+  employee_id: 
+  employee_discount: 
+  employee_discount_price: 
+  gift_discount_amount: 0.00
+  total_price_before_discount: 0.00
+  player_name: 
+  team_name: 
+  stripe_paymentIntentId: 
+  is_api_create: 
+  payroll_order: 
+  payroll_amount: 
+
+Row 2:
+  ID: 1296
+  OrderID: 0305-134511-2130
+  OrderDate: 2013-03-05 13:45:11
+  UserID: 2130
+  UserLogin: 
+  Email: edemel@toyotatmc.com
+  Name: Eric Demel
+  Dept: 
+  DueDate: 0000-00-00
+  Company: 
+  ShipToName: Eric Demel
+  ShipToDept: 
+  Phone: 
+  Address1: 24434 Stanwick Crossing
+  Address2: 
+  City: Katy
+  State: TX
+  Zip: 77494
+  Notes: 
+  BillCode: 37
+  BillTo: 
+  Status: new
+  ShipDate: 0000-00-00 00:00:00
+  CID: 0
+  ClientOrderNumber: 
+  country: 
+  is_custom_order: 
+  custom_desc: 
+  item_due_date: 0000-00-00
+  name_of_shipping_address: 
+  invoiced: 
+  is_create_from_quote: 
+  po_number: 
+  reorder_by_admin: 0
+  sales_rep: 
+  order_place_by_name: 
+  is_deleted_order: 0
+  points_plus_order_number: 
+  dealer_number: 
+  jde_order_number: 
+  payment_method: 
+  bmw_email_body: 
+  requestor: 
+  cost_center: 
+  tax_type: 
+  txt_file_mailbox: 
+  old_status: 
+  status_change_dtm: 0000-00-00 00:00:00
+  is_on_demand_item: 0
+  is_other_item: 1
+  created_from_order_type: 
+  mailbox_file_name: 
+  previous_budget_amount: 0.00
+  Requested_Delivery_Date: 0000-00-00
+  Exp_Month: 
+  Exp_Year: 
+  CVV: 
+  stripe_transation_id: 
+  order_total: 0.00
+  shipping_charge: 0.00
+  is_manual_order: 0
+  is_update_budget: 0
+  is_gift_order: 0
+  order_sub_status: 
+  is_lord_invoice_export: 0
+  requestor_email: 
+  total_sale_tax: 0.00
+  dealer_code: 
+  dealer_code_discount_amount: 0.00
+  internal_notes: 
+  promo_code: 
+  delivery_method: 
+  sales_channel: 
+  territory_number: 
+  address_3: 
+  order_create_file_name: 
+  sale_discount_total: 0.00
+  ship_via: 0
+  ship_via_other: 
+  is_modern_site_order: 0
+  shipped_status: 
+  shipping_method: 
+  due_date: 0000-00-00
+  customer_po: 
+  import_by_user_id: 0
+  employee_id: 
+  employee_discount: 
+  employee_discount_price: 
+  gift_discount_amount: 0.00
+  total_price_before_discount: 0.00
+  player_name: 
+  team_name: 
+  stripe_paymentIntentId: 
+  is_api_create: 
+  payroll_order: 
+  payroll_amount: 
+
+
+===========================================
+TABLE: FormCategoryLink
+===========================================
+
+COLUMNS:
+--------
+FormID               | Type: int(11)              | Null: NO  | Key: PRI | Default: NULL
+CategoryID           | Type: int(11)              | Null: NO  | Key: PRI | Default: NULL
+
+Total rows: 40528
+
+SAMPLE DATA (First 2 rows):
+------------------------
+Row 1:
+  FormID: 0
+  CategoryID: 2269
+
+Row 2:
+  FormID: 1
+  CategoryID: 3
+
+
+===========================================
+SPECIAL QUERIES FOR API
+===========================================
+
+Product-related tables:
+  - InvoiceItems
+  - Items
+  - Items_22_august_2024
+  - Items_29_july_2024
+  - Items_2_july_2025
+  - OrderItems
+  - OrderItemsFoo
+  - OrderItems_18_august_2025
+  - OrderItems_20-sep-2025
+  - OrderItems_2_july_2025
+  - OrderItems_req
+  - OrderShipmentItems
+  - brand_logos_items
+  - item_available_order
+  - item_group_options
+  - item_groups
+  - item_location
+  - item_log
+  - item_package_options
+  - item_packages
+  - item_price
+  - items_additional_image
+  - items_range_price
+  - items_range_price_options
+  - items_req
+  - items_xls1
+  - kit_item_detail
+  - lumise_order_products
+  - lumise_products
+  - order_item_brand
+  - order_log_item_history_detail
+  - quote_OrderItems
+  - save_cart_item_detail
+
+Category-related tables:
+  - Category
+  - FormCategoryLink
+  - category_group
+  - document_subcategories
+  - documnet_categories
+  - item_location
+  - lumise_categories
+  - lumise_categories_reference
+  - store_location
+
+Attempting to identify main products table:
+  ✓ Found: Items
+    Key columns found:
+      - item_title (matches title)
+      - ContactName (matches name)
+      - custom_file_name (matches name)
+      - is_add_custom_name (matches name)
+      - custom_name_price (matches name)
+      - is_name_validation (matches name)
+      - Price (matches price)
+      - item_price_type (matches price)
+      - price_multi (matches price)
+      - replacement_panel_price (matches price)
+      - custom_name_price (matches price)
+      - custom_number_price (matches price)
+      - sale_price (matches price)
+      - is_remove_price (matches price)
+      - Price (matches Price)
+      - item_price_type (matches Price)
+      - price_multi (matches Price)
+      - replacement_panel_price (matches Price)
+      - custom_name_price (matches Price)
+      - custom_number_price (matches Price)
+      - sale_price (matches Price)
+      - is_remove_price (matches Price)
+      - ImageFile (matches image)
+      - starting_preview_image (matches image)
+      - is_preview_image (matches image)
+      - front_image (matches image)
+      - back_image (matches image)
+      - ImageFile (matches ImageFile)
+
+===========================================
+SUMMARY
+===========================================
+Database connection: OK
+Total tables: 148
+Key tables examined: Items, Category, Users, Orders, FormCategoryLink
+
+===========================================
+END OF REPORT
+===========================================

@@ -1,0 +1,124 @@
+<?php
+// api/v1/user/budget.php
+// PHP 5.6 Compatible - Get user's budget information
+
+require_once '../../config/cors.php';
+require_once '../../config/database.php';
+require_once '../../middleware/auth.php';
+
+// Require authentication
+AuthMiddleware::validateRequest();
+$user_id = $GLOBALS['auth_user']['id'];
+$client_id = $GLOBALS['auth_user']['client_id'];
+
+$pdo = getPDOConnection();
+
+try {
+    // Get user's budget information
+    $stmt = $pdo->prepare("
+        SELECT 
+            Budget as budget_limit,
+            BudgetBalance as budget_balance,
+            YEAR(NOW()) as budget_year
+        FROM Users 
+        WHERE ID = :user_id
+    ");
+    $stmt->execute(array('user_id' => $user_id));
+    $budget_info = $stmt->fetch();
+    
+    if (!$budget_info || $budget_info['budget_limit'] === null) {
+        // User has no budget set
+        echo json_encode(array(
+            'success' => true,
+            'data' => array(
+                'has_budget' => false,
+                'budget_limit' => 0,
+                'budget_balance' => 0,
+                'budget_used' => 0,
+                'budget_percentage' => 0,
+                'budget_year' => date('Y')
+            )
+        ));
+        exit;
+    }
+    
+    $budget_limit = (float)$budget_info['budget_limit'];
+    $budget_balance = (float)$budget_info['budget_balance'];
+    $budget_used = $budget_limit - $budget_balance;
+    $budget_percentage = $budget_limit > 0 ? round(($budget_used / $budget_limit) * 100, 2) : 0;
+    
+    // Get recent budget transactions
+    $stmt = $pdo->prepare("
+        SELECT 
+            bt.action_title,
+            bt.log_type,
+            bt.created_dtm,
+            btd.field_name,
+            btd.old_value,
+            btd.new_value
+        FROM budget_log_all_trans bt
+        LEFT JOIN budget_log_all_trans_detail btd ON bt.id = btd.log_id
+        WHERE bt.user_id = :user_id
+        ORDER BY bt.created_dtm DESC
+        LIMIT 10
+    ");
+    $stmt->execute(array('user_id' => $user_id));
+    $transactions = $stmt->fetchAll();
+    
+    // Format transactions
+    $formatted_transactions = array();
+    foreach ($transactions as $trans) {
+        $formatted_transactions[] = array(
+            'action' => $trans['action_title'],
+            'type' => $trans['log_type'],
+            'date' => $trans['created_dtm'],
+            'field' => $trans['field_name'],
+            'old_value' => (float)$trans['old_value'],
+            'new_value' => (float)$trans['new_value'],
+            'change' => (float)$trans['new_value'] - (float)$trans['old_value']
+        );
+    }
+    
+    // Get budget statistics for current year
+    $current_year = date('Y');
+    $stmt = $pdo->prepare("
+        SELECT 
+            COUNT(*) as total_orders,
+            SUM(Total) as total_spent
+        FROM Orders 
+        WHERE UID = :user_id 
+        AND YEAR(OrderDate) = :year
+        AND Status != 'cancelled'
+    ");
+    $stmt->execute(array(
+        'user_id' => $user_id,
+        'year' => $current_year
+    ));
+    $stats = $stmt->fetch();
+    
+    echo json_encode(array(
+        'success' => true,
+        'data' => array(
+            'has_budget' => true,
+            'budget_limit' => $budget_limit,
+            'budget_balance' => $budget_balance,
+            'budget_used' => $budget_used,
+            'budget_percentage' => $budget_percentage,
+            'budget_year' => $current_year,
+            'can_order' => $budget_balance > 0,
+            'statistics' => array(
+                'total_orders' => (int)$stats['total_orders'],
+                'total_spent' => (float)$stats['total_spent']
+            ),
+            'recent_transactions' => $formatted_transactions
+        )
+    ));
+    
+} catch (Exception $e) {
+    error_log('Budget endpoint error: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(array(
+        'success' => false,
+        'error' => 'Failed to retrieve budget information'
+    ));
+}

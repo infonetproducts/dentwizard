@@ -1,0 +1,63 @@
+# Environment files (NEVER commit these!)
+.env
+.env.local
+.env.production
+.env.staging
+.env.development.local
+.env.staging.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+error.log
+access.log
+security.log
+
+# Cache
+cache/
+*.cache
+
+# Session files
+sessions/
+
+# Rate limiting data
+rate_limit/
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Vendor (if using Composer)
+vendor/
+composer.lock
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+*~
+
+# Test files
+test-*.php
+*.test.php
+
+# Documentation build files
+docs/_build/
+
+# Sensitive configuration
+config/production.php
+config/credentials.php
+
+# Azure/SSO credentials
+azure-credentials.json
+sso-config.json
+*.pem
+*.key
+*.crt

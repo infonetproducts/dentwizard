@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { Toaster } from 'react-hot-toast';
 import { Provider } from 'react-redux';
 
-import { msalConfig } from './authConfig';
+import { msalConfig, msalInstance } from './authConfig';
 import { theme } from './theme/theme';
 import { store } from './store/store';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -20,9 +20,6 @@ import CheckoutPage from './pages/CheckoutPage';
 import ProfilePage from './pages/ProfilePage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import Layout from './components/layout/Layout';
-
-// Initialize MSAL
-const msalInstance = new PublicClientApplication(msalConfig);
 
 // Initialize React Query
 const queryClient = new QueryClient({

@@ -1,3 +1,5 @@
+import { PublicClientApplication } from '@azure/msal-browser';
+
 // Azure AD Authentication Configuration
 export const msalConfig = {
   auth: {
@@ -44,3 +46,6 @@ export const loginRequest = {
 export const graphConfig = {
   graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
 };
+
+// Initialize MSAL instance
+export const msalInstance = new PublicClientApplication(msalConfig);

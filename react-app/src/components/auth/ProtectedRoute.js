@@ -12,9 +12,10 @@ const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
   useEffect(() => {
-    // Check if we're using mock authentication
+    // Check authentication in order of priority
+    
+    // 1. Check if we're using mock authentication
     if (process.env.REACT_APP_USE_MOCK_AUTH === 'true') {
-      // Set mock user data
       const mockUser = {
         name: 'John Demo',
         email: 'john.demo@dentwizard.com',
@@ -35,22 +36,65 @@ const ProtectedRoute = () => {
       
       setIsAuthenticated(true);
       setLoading(false);
-    } else {
-      // Use real Azure AD authentication
-      if (accounts.length > 0) {
-        const account = accounts[0];
+      return;
+    }
+    
+    // 2. Check for standard token-based authentication (email/password)
+    const authToken = localStorage.getItem('authToken');
+    const authMethod = localStorage.getItem('authMethod');
+    const userStr = localStorage.getItem('user');
+    
+    if (authToken && authMethod === 'standard' && userStr) {
+      try {
+        const user = JSON.parse(userStr);
         dispatch(setUser({ 
-          user: {
-            name: account.name,
-            email: account.username,
-            firstName: account.name?.split(' ')[0],
-            lastName: account.name?.split(' ')[1]
-          }
+          user: user,
+          authMethod: 'standard'
         }));
         setIsAuthenticated(true);
+        setLoading(false);
+        return;
+      } catch (err) {
+        console.error('Error parsing user from localStorage:', err);
       }
-      setLoading(false);
     }
+    
+    // 3. Check for development mode authentication
+    if (authMethod === 'dev' && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        dispatch(setUser({ 
+          user: user,
+          authMethod: 'dev'
+        }));
+        setIsAuthenticated(true);
+        setLoading(false);
+        return;
+      } catch (err) {
+        console.error('Error parsing dev user from localStorage:', err);
+      }
+    }
+    
+    // 4. Check for Azure AD SSO authentication
+    if (accounts.length > 0) {
+      const account = accounts[0];
+      dispatch(setUser({ 
+        user: {
+          name: account.name,
+          email: account.username,
+          firstName: account.name?.split(' ')[0],
+          lastName: account.name?.split(' ')[1]
+        },
+        authMethod: 'sso'
+      }));
+      setIsAuthenticated(true);
+      setLoading(false);
+      return;
+    }
+    
+    // No authentication found
+    setIsAuthenticated(false);
+    setLoading(false);
   }, [accounts, dispatch]);
 
   if (loading) {

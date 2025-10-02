@@ -1,13 +1,11 @@
 <?php
 // Shipping Methods API - Matching your working endpoint structure
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Session-ID");
-header("Content-Type: application/json");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit();
-}
+// Include centralized CORS configuration
+require_once __DIR__ . '/../../cors.php';
+
+// Set content type
+header("Content-Type: application/json");
 
 // Get parameters
 $client_id = isset($_GET['client_id']) ? intval($_GET['client_id']) : 0;

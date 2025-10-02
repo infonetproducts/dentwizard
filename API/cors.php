@@ -50,7 +50,7 @@ if (in_array($origin, $allowed_origins)) {
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 
 // Allow specific headers
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Session-ID, X-Auth-Token");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Session-ID, X-Auth-Token, X-User-Id");
 
 // Allow credentials
 header("Access-Control-Allow-Credentials: true");

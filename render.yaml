@@ -1,20 +1,20 @@
-# Render Blueprint for DentWizard
+# Render Blueprint for DentWizard - STAGING
 # Frontend only - API runs on AWS EC2
 
 services:
-  # React Frontend - Production
+  # React Frontend - Staging
   - type: web
-    name: dentwizard-app
+    name: dentwizard-app-staging
     runtime: static
     repo: https://github.com/infonetproducts/dentwizard
-    branch: main
+    branch: staging
     buildCommand: cd react-app && npm install && REACT_APP_API_URL=$REACT_APP_API_URL npm run build
     staticPublishPath: ./react-app/build
     envVars:
       - key: REACT_APP_API_URL
         sync: false  # Set manually in Render dashboard - your AWS EC2 API URL
       - key: REACT_APP_ENVIRONMENT
-        value: production
+        value: staging
     routes:
       - type: rewrite
         source: /*

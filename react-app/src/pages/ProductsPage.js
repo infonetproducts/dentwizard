@@ -46,6 +46,7 @@ const ProductsPage = () => {
   const categoryId = searchParams.get('category');
   const searchQuery = searchParams.get('search');
   const [sortBy, setSortBy] = useState('name');
+  const [sortedProducts, setSortedProducts] = useState([]);
   
   // Get category info
   const category = categories.find(cat => cat.id === parseInt(categoryId));
@@ -59,11 +60,10 @@ const ProductsPage = () => {
     }));
   }, [dispatch, categoryId, searchQuery, filters.search]);
   
-  const handleSortChange = (value) => {
-    setSortBy(value);
-    // Sort products locally
+  // Sort products whenever products or sortBy changes
+  useEffect(() => {
     let sorted = [...products];
-    switch(value) {
+    switch(sortBy) {
       case 'price_low':
         sorted.sort((a, b) => a.price - b.price);
         break;
@@ -74,7 +74,11 @@ const ProductsPage = () => {
       default:
         sorted.sort((a, b) => a.name.localeCompare(b.name));
     }
-    // You could dispatch this to Redux store if needed
+    setSortedProducts(sorted);
+  }, [products, sortBy]);
+  
+  const handleSortChange = (value) => {
+    setSortBy(value);
   };
   
   
@@ -261,7 +265,7 @@ const ProductsPage = () => {
               </Grid>
             ))}
           </Grid>
-        ) : products.length === 0 ? (
+        ) : sortedProducts.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary">
               No products found in this category
@@ -277,7 +281,7 @@ const ProductsPage = () => {
         ) : (
           <AnimatePresence>
             <Grid container spacing={2}>
-              {products.map((product, index) => (
+              {sortedProducts.map((product, index) => (
                 <Grid 
                   item 
                   xs={viewMode === 'list' ? 12 : 6} 

@@ -32,8 +32,6 @@ import {
   useTheme,
   useMediaQuery,
   Badge,
-  Switch,
-  FormControlLabel,
   Stack,
   CircularProgress
 } from '@mui/material';
@@ -49,9 +47,7 @@ import {
   Add,
   LocalShipping,
   Receipt,
-  Notifications,
   Security,
-  CreditCard,
   Business,
   Save,
   Cancel,
@@ -97,11 +93,6 @@ function ProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [orders, setOrders] = useState([]);
   const [addresses, setAddresses] = useState([]);
-  const [notifications, setNotifications] = useState({
-    orderUpdates: true,
-    promotions: false,
-    newsletter: true
-  });
   
   // Fetch profile data on component mount
   useEffect(() => {
@@ -231,17 +222,6 @@ function ProfilePage() {
       } catch (error) {
         setError('Failed to delete address');
       }
-    }
-  };
-
-  const handleNotificationChange = async (setting) => {
-    try {
-      const updatedSettings = { ...notifications, ...setting };
-      await api.put('/user/notifications', updatedSettings);
-      setNotifications(updatedSettings);
-      setSuccess('Notification preferences updated');
-    } catch (error) {
-      setError('Failed to update notifications');
     }
   };
 
@@ -691,43 +671,6 @@ function ProfilePage() {
           <Stack spacing={3}>
             <Box>
               <Typography variant="h6" gutterBottom>
-                Notification Preferences
-              </Typography>
-              <Stack spacing={2}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={notifications.orderUpdates}
-                      onChange={(e) => handleNotificationChange({ orderUpdates: e.target.checked })}
-                    />
-                  }
-                  label="Order Updates"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={notifications.promotions}
-                      onChange={(e) => handleNotificationChange({ promotions: e.target.checked })}
-                    />
-                  }
-                  label="Promotions & Deals"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={notifications.newsletter}
-                      onChange={(e) => handleNotificationChange({ newsletter: e.target.checked })}
-                    />
-                  }
-                  label="Newsletter"
-                />
-              </Stack>
-            </Box>
-            
-            <Divider />
-            
-            <Box>
-              <Typography variant="h6" gutterBottom>
                 Security
               </Typography>
               <List>
@@ -739,18 +682,6 @@ function ProfilePage() {
                     primary="Single Sign-On (SSO)"
                     secondary="You are signed in with your organization's SSO"
                   />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <CreditCard />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Payment Methods"
-                    secondary="Manage your saved payment methods"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button size="small">Manage</Button>
-                  </ListItemSecondaryAction>
                 </ListItem>
               </List>
             </Box>

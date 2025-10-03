@@ -126,8 +126,16 @@ const ProductsPage = () => {
           variant={isMobile ? 'body2' : 'h6'}
           fontWeight="500"
           gutterBottom
-          noWrap
           onClick={() => navigate(`/products/${product.id}`)}
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            minHeight: isMobile ? '2.5em' : '3em',
+            cursor: 'pointer'
+          }}
         >
           {product.name}
         </Typography>

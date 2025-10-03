@@ -162,9 +162,16 @@ const HomePage = () => {
                     <CardContent sx={{ flexGrow: 1, p: isMobile ? 1.5 : 2 }}>
                       <Typography
                         gutterBottom
-                        variant={isMobile ? 'body2' : 'body1'}
-                        noWrap
-                        sx={{ fontWeight: 500 }}
+                        variant={isMobile ? 'body2' : 'h6'}
+                        sx={{ 
+                          fontWeight: 500,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          minHeight: isMobile ? '2.5em' : '3em'
+                        }}
                       >
                         {product.name}
                       </Typography>

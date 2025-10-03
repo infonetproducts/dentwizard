@@ -42,6 +42,7 @@ import { fetchCart } from '../../store/slices/cartSlice';
 import { fetchUserProfile } from '../../store/slices/profileSlice';
 import CartDrawer from './CartDrawer';
 import MobileSearch from './MobileSearch';
+import Footer from './Footer';
 const Layout = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -318,6 +319,9 @@ const Layout = () => {
           <Outlet />
         </Container>
       </Box>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Mobile Bottom Navigation */}
       {isMobile && (

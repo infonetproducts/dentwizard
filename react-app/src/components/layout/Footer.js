@@ -26,7 +26,7 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        bgcolor: '#1a1a1a',
+        bgcolor: '#32478a',
         color: 'white',
         pt: 6,
         pb: 3,
@@ -60,17 +60,6 @@ const Footer = () => {
                   sx={{ '&:hover': { color: '#3b82f6' } }}
                 >
                   (800) DENT-WIZ
-                </Link>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Email sx={{ fontSize: 20 }} />
-                <Link
-                  href="mailto:Info@LeaderGraphic.com"
-                  color="inherit"
-                  underline="hover"
-                  sx={{ '&:hover': { color: '#3b82f6' } }}
-                >
-                  Info@LeaderGraphic.com
                 </Link>
               </Box>
             </Stack>
@@ -148,16 +137,34 @@ const Footer = () => {
               </IconButton>
             </Stack>
             <Box sx={{ mt: 3 }}>
-              <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+              <Typography variant="body2" sx={{ color: '#9ca3af', mb: 0.5 }}>
                 Apparel Department
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                Leader Graphics
               </Typography>
               <Link
                 href="tel:814-528-5722"
                 color="inherit"
                 underline="hover"
-                sx={{ '&:hover': { color: '#3b82f6' } }}
+                sx={{ 
+                  display: 'block',
+                  mb: 0.5,
+                  '&:hover': { color: '#3b82f6' } 
+                }}
               >
-                814-528-5722
+                (814) 528-5722
+              </Link>
+              <Link
+                href="mailto:info@leadergraphic.com"
+                color="inherit"
+                underline="hover"
+                sx={{ 
+                  display: 'block',
+                  '&:hover': { color: '#3b82f6' } 
+                }}
+              >
+                info@leadergraphic.com
               </Link>
             </Box>
           </Grid>

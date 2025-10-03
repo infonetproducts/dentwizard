@@ -16,9 +16,7 @@ import {
   FormControl,
   InputLabel,
   Skeleton,
-  IconButton,
   Container,
-  Badge,
   useTheme,
   useMediaQuery,
   Breadcrumbs,
@@ -26,12 +24,10 @@ import {
 } from '@mui/material';
 import {
   GridView as GridIcon,
-  ViewList as ListIcon,
-  Add as AddIcon
+  ViewList as ListIcon
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchProducts, setFilters } from '../store/slices/productsSlice';
-import { addToCart, fetchCart } from '../store/slices/cartSlice';
 import { setViewMode } from '../store/slices/uiSlice';
 import CategoryNav from '../components/CategoryNav';
 import SearchBar from '../components/SearchBar';
@@ -46,7 +42,6 @@ const ProductsPage = () => {
   
   const { items: products, loading, categories, filters } = useSelector(state => state.products);
   const { viewMode } = useSelector(state => state.ui);
-  const cart = useSelector(state => state.cart.items);
   
   const categoryId = searchParams.get('category');
   const searchQuery = searchParams.get('search');
@@ -91,10 +86,6 @@ const ProductsPage = () => {
     // You could dispatch this to Redux store if needed
   };
   
-  const getCartQuantity = (productId) => {
-    const item = cart.find(item => item.product_id === productId);
-    return item ? item.quantity : 0;
-  };
   
   const ProductCard = ({ product }) => (
     <Card
@@ -166,28 +157,6 @@ const ProductsPage = () => {
                 ${Number(product.price).toFixed(2)}
               </Typography>
             )}
-          </Box>
-          
-          <Box>
-            {getCartQuantity(product.id) > 0 && (
-              <Badge 
-                badgeContent={getCartQuantity(product.id)} 
-                color="primary"
-                sx={{ mr: 1 }}
-              >
-                <span />
-              </Badge>
-            )}
-            <IconButton
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAddToCart(product);
-              }}
-              size={isMobile ? 'small' : 'medium'}
-            >
-              <AddIcon />
-            </IconButton>
           </Box>
         </Stack>
       </CardContent>

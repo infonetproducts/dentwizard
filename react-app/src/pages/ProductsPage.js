@@ -16,6 +16,7 @@ import {
   FormControl,
   InputLabel,
   Skeleton,
+  IconButton,
   Container,
   useTheme,
   useMediaQuery,
@@ -27,11 +28,10 @@ import {
   ViewList as ListIcon
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchProducts, setFilters } from '../store/slices/productsSlice';
+import { fetchProducts } from '../store/slices/productsSlice';
 import { setViewMode } from '../store/slices/uiSlice';
 import CategoryNav from '../components/CategoryNav';
 import SearchBar from '../components/SearchBar';
-import toast from 'react-hot-toast';
 
 const ProductsPage = () => {
   const navigate = useNavigate();
@@ -58,15 +58,6 @@ const ProductsPage = () => {
       search: searchQuery || filters.search 
     }));
   }, [dispatch, categoryId, searchQuery, filters.search]);
-  
-  useEffect(() => {
-    dispatch(fetchCart());
-  }, [dispatch]);
-  
-  const handleAddToCart = (product) => {
-    dispatch(addToCart({ productId: product.id, quantity: 1 }));
-    toast.success(`${product.name} added to cart!`);
-  };
   
   const handleSortChange = (value) => {
     setSortBy(value);

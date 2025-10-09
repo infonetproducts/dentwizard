@@ -157,8 +157,6 @@ const CategoryNav = () => {
                 {hasSubcategories && isOpen && (
                   <Paper
                     elevation={3}
-                    onMouseEnter={() => handleMouseEnter(category.id)}
-                    onMouseLeave={handleMouseLeave}
                     sx={{
                       position: 'absolute',
                       top: '100%',

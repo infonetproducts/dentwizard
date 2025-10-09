@@ -31,7 +31,7 @@ class ShippingService {
     const methods = [];
     
     // Special client configurations from PHP
-    const freeShippingClients = [56, 59, 62, 63, 72, 78, 89];
+    const freeShippingClients = [56, 59, 62, 63, 72, 78, 89, 244]; // Added Dent Wizard (244)
     const pickupOnlyClients = [61, 62, 63];
     
     if (pickupOnlyClients.includes(parseInt(clientId))) {
@@ -102,7 +102,7 @@ class ShippingService {
    * @returns {Number} Shipping cost
    */
   calculateShippingCost(methodId, clientId, subtotal) {
-    const freeShippingClients = [56, 59, 62, 63, 72, 78, 89];
+    const freeShippingClients = [56, 59, 62, 63, 72, 78, 89, 244]; // Added Dent Wizard (244)
     
     // Free shipping for certain clients
     if (freeShippingClients.includes(clientId)) {

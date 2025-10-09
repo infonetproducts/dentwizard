@@ -160,8 +160,8 @@ const ProductsPage = () => {
   
   return (
     <Box sx={{ pb: isMobile ? 8 : 2 }}>
-      {/* Category Navigation */}
-      <CategoryNav />
+      {/* Category Navigation - Desktop Only */}
+      {!isMobile && <CategoryNav />}
       
       <Container sx={{ mt: 3 }}>
         {/* Search Bar */}

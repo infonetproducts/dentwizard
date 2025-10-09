@@ -189,10 +189,12 @@ const cartSlice = createSlice({
       // Initialize Cart
       .addCase(initializeCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload.items || [];
-        state.summary = action.payload.summary || state.summary;
-        state.budget = action.payload.budget || state.budget;
-        state.discounts = action.payload.discounts || state.discounts;
+        if (action.payload) {
+          state.items = action.payload.items || [];
+          state.summary = action.payload.summary || state.summary;
+          state.budget = action.payload.budget || state.budget;
+          state.discounts = action.payload.discounts || state.discounts;
+        }
       })
       // Fetch Cart
       .addCase(fetchCart.pending, (state) => {
@@ -201,16 +203,18 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload.items || [];
-        state.summary = action.payload.summary || state.summary;
-        state.budget = action.payload.budget || state.budget;
-        state.discounts = action.payload.discounts || state.discounts;
-        
-        // Save to localStorage
-        cartPersistence.saveCart({
-          items: state.items,
-          summary: state.summary
-        });
+        if (action.payload) {
+          state.items = action.payload.items || [];
+          state.summary = action.payload.summary || state.summary;
+          state.budget = action.payload.budget || state.budget;
+          state.discounts = action.payload.discounts || state.discounts;
+          
+          // Save to localStorage
+          cartPersistence.saveCart({
+            items: state.items,
+            summary: state.summary
+          });
+        }
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
@@ -241,7 +245,8 @@ const cartSlice = createSlice({
       .addCase(addToCart.fulfilled, (state, action) => {
         state.loading = false;
         // Update cart state with returned data
-        if (action.payload.data) {
+        // action.payload = response.data, so we need action.payload.data for the cart data
+        if (action.payload && action.payload.data) {
           state.items = action.payload.data.items || [];
           if (action.payload.data.summary) {
             state.summary = action.payload.data.summary;
@@ -254,13 +259,17 @@ const cartSlice = createSlice({
       })
       // Update Quantity
       .addCase(updateQuantity.fulfilled, (state, action) => {
-        state.items = action.payload.items || [];
-        state.summary = action.payload.summary || state.summary;
+        if (action.payload) {
+          state.items = action.payload.items || [];
+          state.summary = action.payload.summary || state.summary;
+        }
       })
       // Remove from Cart
       .addCase(removeFromCart.fulfilled, (state, action) => {
-        state.items = action.payload.items || [];
-        state.summary = action.payload.summary || state.summary;
+        if (action.payload) {
+          state.items = action.payload.items || [];
+          state.summary = action.payload.summary || state.summary;
+        }
       });
   }
 });

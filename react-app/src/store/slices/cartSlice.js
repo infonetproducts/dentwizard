@@ -188,7 +188,10 @@ const cartSlice = createSlice({
       .addCase(initializeCart.fulfilled, (state, action) => {
         state.loading = false;
         state.items = action.payload.items || [];
-        state.summary = action.payload.summary || state.summary;
+        state.summary = {
+          ...(action.payload.summary || state.summary),
+          shipping: 0 // Always $0.00 shipping
+        };
         state.budget = action.payload.budget || state.budget;
         state.discounts = action.payload.discounts || state.discounts;
       })
@@ -200,7 +203,10 @@ const cartSlice = createSlice({
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
         state.items = action.payload.items || [];
-        state.summary = action.payload.summary || state.summary;
+        state.summary = {
+          ...(action.payload.summary || state.summary),
+          shipping: 0 // Always $0.00 shipping
+        };
         state.budget = action.payload.budget || state.budget;
         state.discounts = action.payload.discounts || state.discounts;
         
@@ -242,7 +248,10 @@ const cartSlice = createSlice({
         if (action.payload.data) {
           state.items = action.payload.data.items || [];
           if (action.payload.data.summary) {
-            state.summary = action.payload.data.summary;
+            state.summary = {
+              ...action.payload.data.summary,
+              shipping: 0 // Always $0.00 shipping
+            };
           }
         }
       })
@@ -253,12 +262,18 @@ const cartSlice = createSlice({
       // Update Quantity
       .addCase(updateQuantity.fulfilled, (state, action) => {
         state.items = action.payload.items || [];
-        state.summary = action.payload.summary || state.summary;
+        state.summary = {
+          ...(action.payload.summary || state.summary),
+          shipping: 0 // Always $0.00 shipping
+        };
       })
       // Remove from Cart
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.items = action.payload.items || [];
-        state.summary = action.payload.summary || state.summary;
+        state.summary = {
+          ...(action.payload.summary || state.summary),
+          shipping: 0 // Always $0.00 shipping
+        };
       });
   }
 });

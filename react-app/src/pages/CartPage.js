@@ -205,7 +205,7 @@ const CartPage = () => {
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography>Shipping:</Typography>
-                  <Typography>${summary?.shipping?.toFixed(2)}</Typography>
+                  <Typography>Free</Typography>
                 </Box>
                 
                 <Divider />

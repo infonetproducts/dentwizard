@@ -25,10 +25,20 @@ const CategoryNav = () => {
   const { categories = [] } = useSelector(state => state.products || {});
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const [expandedCategory, setExpandedCategory] = useState(null); // For mobile touch
+  const [hoverTimeout, setHoverTimeout] = useState(null); // For delayed hide
   
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
+  
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+      }
+    };
+  }, [hoverTimeout]);
   
   // Get parent categories only
   const parentCategories = categories.filter(cat => 
@@ -37,6 +47,31 @@ const CategoryNav = () => {
   
   const getSubcategories = (parentId) => {
     return categories.filter(cat => cat && cat.parent_id === parentId);
+  };
+  
+  // Handle mouse enter with immediate show
+  const handleMouseEnter = (categoryId) => {
+    if (isMobile) return;
+    
+    // Clear any pending hide timeout
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      setHoverTimeout(null);
+    }
+    
+    setHoveredCategory(categoryId);
+  };
+  
+  // Handle mouse leave with delayed hide
+  const handleMouseLeave = () => {
+    if (isMobile) return;
+    
+    // Add delay before hiding to allow user to move to dropdown
+    const timeout = setTimeout(() => {
+      setHoveredCategory(null);
+    }, 300); // 300ms delay
+    
+    setHoverTimeout(timeout);
   };
   
   const handleCategoryClick = (categoryId, event) => {
@@ -55,6 +90,7 @@ const CategoryNav = () => {
   const handleSubcategoryClick = (categoryId) => {
     navigate(`/products?category=${categoryId}`);
     setExpandedCategory(null); // Close dropdown after selection
+    setHoveredCategory(null); // Close dropdown on desktop too
   };
   
   const isDropdownOpen = (categoryId) => {
@@ -94,8 +130,8 @@ const CategoryNav = () => {
             return (              <Box
                 key={category.id}
                 sx={{ position: 'relative' }}
-                onMouseEnter={!isMobile ? () => setHoveredCategory(category.id) : undefined}
-                onMouseLeave={!isMobile ? () => setHoveredCategory(null) : undefined}
+                onMouseEnter={() => handleMouseEnter(category.id)}
+                onMouseLeave={handleMouseLeave}
               >
                 <Button
                   onClick={(e) => handleCategoryClick(category.id, e)}
@@ -121,6 +157,8 @@ const CategoryNav = () => {
                 {hasSubcategories && isOpen && (
                   <Paper
                     elevation={3}
+                    onMouseEnter={() => handleMouseEnter(category.id)}
+                    onMouseLeave={handleMouseLeave}
                     sx={{
                       position: 'absolute',
                       top: '100%',
@@ -128,7 +166,8 @@ const CategoryNav = () => {
                       transform: isMobile ? 'translateX(-50%)' : 'none',
                       minWidth: isMobile ? 150 : 200,
                       zIndex: 1200,
-                      mt: 0.5,
+                      mt: 0, // No gap - flush with button
+                      pt: 0.5, // Small internal padding for visual spacing
                       maxHeight: '60vh',
                       overflowY: 'auto',
                       // Ensure dropdown stays within viewport on mobile

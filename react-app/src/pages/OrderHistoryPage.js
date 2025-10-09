@@ -72,7 +72,9 @@ function OrderHistoryPage() {
   };
 
   const handleCopyOrderId = () => {
-    navigator.clipboard.writeText(orderId);
+    // Copy the formatted order ID, not the database ID
+    const orderNumberToCopy = order?.order_id || orderId;
+    navigator.clipboard.writeText(orderNumberToCopy);
     // Show success message
   };
 
@@ -136,7 +138,7 @@ function OrderHistoryPage() {
             <Grid item xs={12} md={6}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <Typography variant="h5">
-                  Order #{order.id}
+                  Order #{order.order_id || order.id}
                 </Typography>
                 <IconButton
                   size="small"

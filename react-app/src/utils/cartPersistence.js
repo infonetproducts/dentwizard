@@ -8,6 +8,12 @@ export const cartPersistence = {
   // Save cart to localStorage with expiry
   saveCart: (cartData) => {
     try {
+      // Validate cartData before saving
+      if (!cartData || typeof cartData !== 'object') {
+        console.warn('Invalid cart data provided to saveCart:', cartData);
+        return;
+      }
+      
       const cartToSave = {
         items: cartData.items || [],
         summary: cartData.summary || {},

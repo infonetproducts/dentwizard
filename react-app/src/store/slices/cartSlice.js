@@ -51,8 +51,10 @@ export const fetchCart = createAsyncThunk(
       const response = await api.get('/cart/cart.php?action=get');
       const cartData = response.data.data;
       
-      // Save to localStorage whenever we fetch
-      cartPersistence.saveCart(cartData);
+      // Save to localStorage whenever we fetch (only if cartData is valid)
+      if (cartData && typeof cartData === 'object') {
+        cartPersistence.saveCart(cartData);
+      }
       
       return cartData;
     } catch (error) {

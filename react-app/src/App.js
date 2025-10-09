@@ -23,6 +23,7 @@ import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import CartDebugPage from './pages/CartDebugPage';
 import Layout from './components/layout/Layout';
 import AppInitializer from './components/AppInitializer';
+import ScrollToTop from './components/ScrollToTop';
 
 // Initialize MSAL
 const msalInstance = new PublicClientApplication(msalConfig);
@@ -47,6 +48,7 @@ function App() {
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <Router>
+              <ScrollToTop />
               <AppInitializer>
                 <Toaster 
                 position="top-center"

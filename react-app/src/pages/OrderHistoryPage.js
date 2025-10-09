@@ -333,12 +333,6 @@ function OrderHistoryPage() {
                 ${order.total?.toFixed(2)}
               </Typography>
             </Box>
-            <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
-              <Typography variant="caption" color="text.secondary">
-                Payment Method: {order.payment_method}<br />
-                {order.payment_last4 && `Card ending in ${order.payment_last4}`}
-              </Typography>
-            </Box>
           </Paper>
 
           {/* Actions */}

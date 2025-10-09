@@ -169,24 +169,35 @@ const Footer = () => {
             </Box>
           </Grid>
 
-          {/* Sales Policy */}
+          {/* Returns & Exchanges */}
           <Grid item xs={12} md={4}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-              Sales Policy
+              Returns & Exchanges:
             </Typography>
-            <Typography variant="body2" sx={{ lineHeight: 1.6, color: '#d1d5db' }}>
-              Due to the nature of Custom Printed and Embroidered apparel and promotional items, 
-              <strong> ALL SALES ARE FINAL</strong>. If you receive the wrong size item or misprinted 
-              apparel, please contact us within 30 days to exchange at no cost.
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 2, lineHeight: 1.6, color: '#d1d5db' }}>
-              Please note that sizing can vary between manufacturers and styles. If you have any 
-              questions on how a garment may fit or would like to purchase a sample product, please 
-              email us or call our Apparel Department.
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 2, fontStyle: 'italic', color: '#9ca3af' }}>
-              *We are not able to reorder apparel due to the wrong size being purchased.
-            </Typography>
+            <Box component="ul" sx={{ pl: 2, mt: 0, color: '#d1d5db' }}>
+              <Typography component="li" variant="body2" sx={{ lineHeight: 1.8, mb: 1.5 }}>
+                <strong>All Sales Final</strong> – Because all apparel and promotional items are custom printed or embroidered, returns and refunds are not available except as noted.
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ lineHeight: 1.8, mb: 1.5 }}>
+                <strong>Wrong Item or Misprint</strong> – If you receive the wrong item or a misprinted product, please contact Leader Graphics within 30 days to arrange a free exchange and shipping label.
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ lineHeight: 1.8, mb: 1.5 }}>
+                <strong>Incorrect Size Ordered</strong> – Items ordered in the wrong size do not qualify for return. However, they can be exchanged for another size at no additional cost (within 30 days). Contact Leader Graphics to arrange a free exchange and shipping label.
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ lineHeight: 1.8, mb: 1.5 }}>
+                <strong>Sizing Notice</strong> – Sizes may vary between brands and styles. If you're unsure, we encourage contacting Leader Graphics before placing an order.
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ lineHeight: 1.8 }}>
+                <strong>Questions</strong> – Email{' '}
+                <Link 
+                  href="mailto:info@LeaderGraphic.com" 
+                  sx={{ color: '#3b82f6', textDecoration: 'underline' }}
+                >
+                  info@LeaderGraphic.com
+                </Link>{' '}
+                or call 814-528-5722 for help with sizing or other order questions.
+              </Typography>
+            </Box>
           </Grid>
         </Grid>
 

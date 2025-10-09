@@ -172,15 +172,40 @@ switch ($action) {
 // Calculate totals for all responses
 $total_items = 0;
 $subtotal = 0;
+$client_id = null;
 
 foreach ($_SESSION['cart_items'] as $item) {
     $total_items += $item['quantity'];
     $subtotal += $item['total'];
 }
 
-// Tax will be calculated at checkout based on shipping address using TaxJar
+// Get client ID from the first item in cart (all items should be from same client)
+if (!empty($_SESSION['cart_items'])) {
+    // Connect to get client ID
+    $mysqli = @new mysqli('localhost', 'rwaf', 'Py*uhb$L$##', 'rwaf');
+    if (!$mysqli->connect_error) {
+        $first_product_id = $_SESSION['cart_items'][0]['product_id'];
+        $query = "SELECT CID FROM Items WHERE ID = " . (int)$first_product_id . " LIMIT 1";
+        $result = $mysqli->query($query);
+        if ($result && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $client_id = (int)$row['CID'];
+        }
+        $mysqli->close();
+    }
+}
+
+// Free shipping clients list
+$free_shipping_clients = array(56, 59, 62, 63, 72, 78, 89, 244); // Added Dent Wizard (244)
+
+// Calculate shipping
+if (in_array($client_id, $free_shipping_clients)) {
+    $shipping = 0; // Free shipping for specific clients
+} else {
+    $shipping = $subtotal > 100 ? 0 : 10;  // Free shipping over $100 for other clients
+}
+
 $tax = 0;  // No tax shown until checkout
-$shipping = $subtotal > 100 ? 0 : 10;  // Free shipping over $100
 $total = $subtotal + $shipping;  // Total without tax
 
 // Add summary to response

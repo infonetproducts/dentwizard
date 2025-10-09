@@ -130,7 +130,8 @@ const ProductDetailPage = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!selectedSize) {
+    // Only require size if the product has available sizes
+    if (availableSizes.length > 0 && !selectedSize) {
       toast.error('Please select a size');
       return;
     }
@@ -290,32 +291,34 @@ const ProductDetailPage = () => {
               </Box>
             )}
 
-            {/* Size Selection */}
-            <Box>
-              <Typography variant="subtitle1" fontWeight="600" gutterBottom>
-                Size
-              </Typography>
-              <ToggleButtonGroup
-                value={selectedSize}
-                exclusive
-                onChange={(e, newSize) => newSize && setSelectedSize(newSize)}
-                aria-label="size selection"
-              >
-                {availableSizes.map((size) => (
-                  <ToggleButton
-                    key={size}
-                    value={size}
-                    sx={{
-                      px: 2,
-                      py: 1,
-                      minWidth: 50
-                    }}
-                  >
-                    {size}
-                  </ToggleButton>
-                ))}
-              </ToggleButtonGroup>
-            </Box>
+            {/* Size Selection - Only show if product has sizes */}
+            {availableSizes.length > 0 && (
+              <Box>
+                <Typography variant="subtitle1" fontWeight="600" gutterBottom>
+                  Size
+                </Typography>
+                <ToggleButtonGroup
+                  value={selectedSize}
+                  exclusive
+                  onChange={(e, newSize) => newSize && setSelectedSize(newSize)}
+                  aria-label="size selection"
+                >
+                  {availableSizes.map((size) => (
+                    <ToggleButton
+                      key={size}
+                      value={size}
+                      sx={{
+                        px: 2,
+                        py: 1,
+                        minWidth: 50
+                      }}
+                    >
+                      {size}
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
+              </Box>
+            )}
 
             {/* Logo Selection */}
             {hasLogos && availableLogos.length > 0 && (

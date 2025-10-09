@@ -26,7 +26,6 @@ import {
   ArrowBack,
   Add,
   Remove,
-  LocalShipping,
   Security,
   CheckCircle
 } from '@mui/icons-material';
@@ -413,12 +412,6 @@ const ProductDetailPage = () => {
 
             {/* Product Features */}
             <Stack spacing={2} sx={{ mt: 2 }}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <LocalShipping color="action" />
-                <Typography variant="body2">
-                  Free shipping on orders over $100
-                </Typography>
-              </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Security color="action" />
                 <Typography variant="body2">

@@ -287,9 +287,10 @@ const CheckoutPage = () => {
   // Budget is loaded from profile state, no need for separate loading
   
   const loadShippingMethods = async () => {
+    // Use clientId from profileUser or user - define outside try-catch for error handler access
+    const clientIdToUse = profileUser?.clientId || user?.clientId || 0;
+    
     try {
-      // Use clientId from profileUser or user
-      const clientIdToUse = profileUser?.clientId || user?.clientId || 0;
       const methods = await shippingService.getShippingMethods(clientIdToUse, subtotal);
       
       if (Array.isArray(methods) && methods.length > 0) {
@@ -306,19 +307,31 @@ const CheckoutPage = () => {
         }
       } else {
         console.warn('Shipping methods response was not an array:', methods);
-        setShippingOptions([{
-          method_id: 'standard',
-          method_name: 'Standard Shipping',
-          cost: 10
-        }]);
+        // Use default methods which respects free shipping clients
+        const defaultMethods = shippingService.getDefaultMethods(clientIdToUse);
+        const mappedDefaults = defaultMethods.map(m => ({
+          method_id: m.id,
+          method_name: m.name,
+          cost: parseFloat(m.cost) || 0
+        }));
+        setShippingOptions(mappedDefaults);
+        if (mappedDefaults.length > 0) {
+          setShippingMethod(mappedDefaults[0].method_id);
+        }
       }
     } catch (error) {
       console.error('Error loading shipping methods:', error);
-      setShippingOptions([{
-        method_id: 'standard',
-        method_name: 'Standard Shipping',
-        cost: 10
-      }]);
+      // Use default methods which respects free shipping clients
+      const defaultMethods = shippingService.getDefaultMethods(clientIdToUse);
+      const mappedDefaults = defaultMethods.map(m => ({
+        method_id: m.id,
+        method_name: m.name,
+        cost: parseFloat(m.cost) || 0
+      }));
+      setShippingOptions(mappedDefaults);
+      if (mappedDefaults.length > 0) {
+        setShippingMethod(mappedDefaults[0].method_id);
+      }
     }
   };
   

@@ -20,7 +20,6 @@ import {
   Home as HomeIcon,
   ShoppingCart as ShoppingCartIcon,
   Person as PersonIcon,
-  History as HistoryIcon,
   Logout as LogoutIcon,
   ChevronRight as ChevronRightIcon,
   ExpandMore as ExpandMoreIcon
@@ -230,18 +229,6 @@ const MobileDrawer = () => {
               <PersonIcon color="primary" />
             </ListItemIcon>
             <ListItemText primary="Profile" />
-          </ListItemButton>
-        </ListItem>
-        
-        <ListItem disablePadding>
-          <ListItemButton
-            onClick={() => handleNavigate('/orders/history')}
-            selected={location.pathname.includes('/orders')}
-          >
-            <ListItemIcon>
-              <HistoryIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText primary="Order History" />
           </ListItemButton>
         </ListItem>
         

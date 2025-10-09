@@ -15,9 +15,22 @@ const authSlice = createSlice({
   },
   reducers: {
     setUser: (state, action) => {
-      state.user = action.payload.user;
-      state.isAuthenticated = true;
-      state.budget = action.payload.budget || state.budget;
+      // Handle both logout (null) and login cases
+      if (action.payload === null || action.payload === undefined) {
+        // Logout case - clear user data
+        state.user = null;
+        state.isAuthenticated = false;
+        state.budget = {
+          allocated: 0,
+          used: 0,
+          remaining: 0
+        };
+      } else {
+        // Login case - set user data
+        state.user = action.payload.user || action.payload;
+        state.isAuthenticated = true;
+        state.budget = action.payload.budget || state.budget;
+      }
     },
     clearUser: (state) => {
       state.user = null;

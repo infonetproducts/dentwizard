@@ -101,8 +101,8 @@ const HomePage = () => {
         </Container>
       </Paper>
       
-      {/* Category Navigation Bar */}
-      <CategoryNav />
+      {/* Category Navigation Bar - Desktop Only */}
+      {!isMobile && <CategoryNav />}
       
       <Container sx={{ mt: 4 }}>
         {/* Featured Products Section - Full Width */}

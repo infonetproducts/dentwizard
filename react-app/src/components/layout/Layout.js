@@ -9,14 +9,6 @@ import {
   IconButton,
   Typography,
   Badge,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  ListItemButton,
-  Divider,
-  Avatar,
   Button,
   useTheme,
   useMediaQuery,
@@ -30,18 +22,15 @@ import {
   ShoppingCart as ShoppingCartIcon,
   Person as PersonIcon,
   Home as HomeIcon,
-  Category as CategoryIcon,
-  LocalMall as LocalMallIcon,
-  Close as CloseIcon,
-  Logout as LogoutIcon,
   AccountCircle as AccountCircleIcon
 } from '@mui/icons-material';
 import { useMsal } from '@azure/msal-react';
-import { toggleMobileMenu, closeMobileMenu } from '../../store/slices/uiSlice';
+import { toggleMobileMenu } from '../../store/slices/uiSlice';
 import { fetchCart } from '../../store/slices/cartSlice';
 import { fetchUserProfile } from '../../store/slices/profileSlice';
 import CartDrawer from './CartDrawer';
 import MobileSearch from './MobileSearch';
+import MobileDrawer from './MobileDrawer';
 import Footer from './Footer';
 const Layout = () => {
   const theme = useTheme();
@@ -51,7 +40,6 @@ const Layout = () => {
   const dispatch = useDispatch();
   const { instance } = useMsal();
   
-  const { isMobileMenuOpen } = useSelector(state => state.ui);
   const { summary, budget } = useSelector(state => state.cart);
   const { user } = useSelector(state => state.auth);
   const { budget: profileBudget, user: profileUser } = useSelector(state => state.profile);
@@ -75,15 +63,12 @@ const Layout = () => {
     else if (path === '/profile') setBottomNavValue(2);
   }, [location]);
 
-  const handleLogout = async () => {
-    await instance.logoutRedirect();
-  };
-
   const menuItems = [
     { text: 'Home', icon: <HomeIcon />, path: '/' },
     { text: 'Cart', icon: <ShoppingCartIcon />, path: '/cart' },
     { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
   ];
+  
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Header */}
@@ -227,83 +212,7 @@ const Layout = () => {
       </AppBar>
 
       {/* Mobile Drawer Menu */}
-      <Drawer
-        anchor="left"
-        open={isMobileMenuOpen}
-        onClose={() => dispatch(closeMobileMenu())}
-        sx={{
-          '& .MuiDrawer-paper': { 
-            width: 280,
-            boxSizing: 'border-box'
-          }
-        }}
-      >
-        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <img 
-            src={dentwizardLogo} 
-            alt="DentWizard" 
-            style={{ 
-              height: '40px',
-              width: 'auto'
-            }} 
-          />
-          <IconButton onClick={() => dispatch(closeMobileMenu())}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        
-        <Divider />
-        
-        {user && (
-          <Box sx={{ p: 2, bgcolor: 'grey.50' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar>{user.name?.charAt(0)}</Avatar>
-              <Box>
-                <Typography variant="body2" fontWeight="bold">
-                  {user.name}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {user.email}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        )}
-        
-        <Divider />
-        
-        <List>
-          {menuItems.map((item) => (
-            <ListItem key={item.text} disablePadding>
-              <ListItemButton
-                onClick={() => {
-                  navigate(item.path);
-                  dispatch(closeMobileMenu());
-                }}
-                selected={location.pathname === item.path}
-              >
-                <ListItemIcon sx={{ color: 'primary.main' }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        
-        <Divider />
-        
-        <List>
-          <ListItem disablePadding>
-            <ListItemButton onClick={handleLogout}>
-              <ListItemIcon sx={{ color: 'error.main' }}>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary="Logout" />
-            </ListItemButton>
-          </ListItem>
-        </List>
-      </Drawer>
+      <MobileDrawer />
 
       {/* Main Content */}
       <Box

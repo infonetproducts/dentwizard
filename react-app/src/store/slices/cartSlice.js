@@ -49,7 +49,13 @@ export const fetchCart = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get('/cart/cart.php?action=get');
-      const cartData = response.data.data;
+      // Try different response structures to be more robust
+      const cartData = response.data.data || response.data || {};
+      
+      console.log('fetchCart response:', { 
+        fullResponse: response.data,
+        extractedCartData: cartData 
+      });
       
       // Save to localStorage whenever we fetch (only if cartData is valid)
       if (cartData && typeof cartData === 'object') {
@@ -58,6 +64,7 @@ export const fetchCart = createAsyncThunk(
       
       return cartData;
     } catch (error) {
+      console.error('fetchCart error:', error);
       // If fetch fails, try loading from localStorage
       const localCart = cartPersistence.loadCart();
       if (localCart) {
@@ -77,8 +84,10 @@ export const addToCart = createAsyncThunk(
         quantity,
         ...options
       });
+      console.log('addToCart response:', response.data);
       return response.data;
     } catch (error) {
+      console.error('addToCart error:', error);
       return rejectWithValue(error.response?.data?.error || 'Failed to add to cart');
     }
   }
@@ -203,17 +212,27 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
+        console.log('fetchCart.fulfilled - action.payload:', action.payload);
+        
         if (action.payload) {
           state.items = action.payload.items || [];
           state.summary = action.payload.summary || state.summary;
           state.budget = action.payload.budget || state.budget;
           state.discounts = action.payload.discounts || state.discounts;
           
+          console.log('Cart state updated:', {
+            itemCount: state.items.length,
+            items: state.items,
+            summary: state.summary
+          });
+          
           // Save to localStorage
           cartPersistence.saveCart({
             items: state.items,
             summary: state.summary
           });
+        } else {
+          console.warn('fetchCart.fulfilled received null/undefined payload');
         }
       })
       .addCase(fetchCart.rejected, (state, action) => {

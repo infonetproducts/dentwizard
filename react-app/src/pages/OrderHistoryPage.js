@@ -149,11 +149,14 @@ function OrderHistoryPage() {
                 </IconButton>
               </Box>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                Placed on {new Date(order.created_at).toLocaleDateString('en-US', {
+                Placed on {new Date(order.created_at).toLocaleString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
-                  day: 'numeric'
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true
                 })}
               </Typography>
             </Grid>

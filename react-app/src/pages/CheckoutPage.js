@@ -731,7 +731,7 @@ const CheckoutPage = () => {
                       <FormControlLabel
                         value="standard"
                         control={<Radio />}
-                        label="Standard Shipping - Free"
+                        label="Standard Shipping - $10.00"
                       />
                     )}
                   </RadioGroup>
@@ -868,7 +868,7 @@ const CheckoutPage = () => {
               </ListItem>
               <ListItem>
                 <ListItemText primary="Shipping" />
-                <Typography>Free</Typography>
+                <Typography>${(orderSummary.shipping || 0).toFixed(2)}</Typography>
               </ListItem>
               <ListItem>
                 <ListItemText primary="Tax" />

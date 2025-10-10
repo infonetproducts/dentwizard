@@ -45,13 +45,24 @@ const LoginPageSSO = () => {
   const [password, setPassword] = useState('');
   const [authType, setAuthType] = useState(null); // null, 'standard', 'sso'
   const [showPassword, setShowPassword] = useState(false);
+  const passwordFieldRef = React.useRef(null);
 
   // Development mode - bypass auth
   const isDevelopment = process.env.REACT_APP_USE_MOCK_AUTH === 'true';
 
+  // Auto-focus password field when it appears
+  React.useEffect(() => {
+    if (showPassword && passwordFieldRef.current) {
+      passwordFieldRef.current.focus();
+    }
+  }, [showPassword]);
+
   // Detect authentication type when user enters email
-  const handleEmailBlur = async () => {
-    if (!email || email.length < 5) return;
+  const handleEmailContinue = async () => {
+    if (!email || email.length < 5) {
+      setError('Please enter a valid email address');
+      return;
+    }
     
     setLoading(true);
     setError(null);
@@ -75,6 +86,16 @@ const LoginPageSSO = () => {
       setShowPassword(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Handle Enter key on email field
+  const handleEmailKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!authType && email) {
+        handleEmailContinue();
+      }
     }
   };
 
@@ -190,9 +211,10 @@ const LoginPageSSO = () => {
                   Sign In
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {authType === null ? 'Enter your email to continue' : 
-                   authType === 'sso' ? 'Sign in with your DentWizard account' :
-                   'Enter your password to continue'}
+                  {authType === null && !email ? 'Enter your email address to get started' : 
+                   authType === null && email ? 'Click Continue to proceed' :
+                   authType === 'sso' ? 'Use your Microsoft account to sign in' :
+                   'Enter your password to sign in'}
                 </Typography>
               </Box>
 
@@ -211,14 +233,36 @@ const LoginPageSSO = () => {
                   label="Email Address"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onBlur={handleEmailBlur}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    // Reset auth type if user changes email
+                    if (authType) {
+                      setAuthType(null);
+                      setShowPassword(false);
+                    }
+                  }}
+                  onKeyPress={handleEmailKeyPress}
                   margin="normal"
                   required
                   autoComplete="email"
                   autoFocus
                   disabled={loading}
+                  helperText={authType === null ? "Enter your email and click Continue" : ""}
                 />
+
+                {/* Continue Button - Shows when email entered but auth type not detected */}
+                {!authType && email.length >= 5 && (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    onClick={handleEmailContinue}
+                    disabled={loading}
+                    sx={{ mt: 2 }}
+                  >
+                    {loading ? <CircularProgress size={24} /> : 'Continue'}
+                  </Button>
+                )}
 
                 {/* Password Field - Only for standard auth */}
                 {showPassword && authType === 'standard' && (
@@ -233,6 +277,7 @@ const LoginPageSSO = () => {
                       required
                       autoComplete="current-password"
                       disabled={loading}
+                      inputRef={passwordFieldRef}
                     />
                     
                     <Button
@@ -270,21 +315,25 @@ const LoginPageSSO = () => {
                     >
                       {loading ? <CircularProgress size={24} /> : 'Sign in with Microsoft'}
                     </Button>
-                    
-                    <Button
-                      fullWidth
-                      variant="text"
-                      size="small"
-                      onClick={() => {
-                        setAuthType(null);
-                        setEmail('');
-                        setShowPassword(false);
-                      }}
-                      sx={{ mt: 1 }}
-                    >
-                      Use a different email
-                    </Button>
                   </>
+                )}
+
+                {/* Back to email option - Shows for both password and SSO */}
+                {authType !== null && (
+                  <Button
+                    fullWidth
+                    variant="text"
+                    size="small"
+                    onClick={() => {
+                      setAuthType(null);
+                      setEmail('');
+                      setShowPassword(false);
+                      setError(null);
+                    }}
+                    sx={{ mt: 2 }}
+                  >
+                    ← Use a different email
+                  </Button>
                 )}
               </Box>
 

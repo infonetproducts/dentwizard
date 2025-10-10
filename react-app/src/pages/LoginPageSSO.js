@@ -77,7 +77,7 @@ const LoginPageSSO = () => {
         setError(result.message || 'User not found. Please check your email address.');
       } else if (result.requiresSSO) {
         // Show info that this user requires SSO
-        toast.info('Please use Single Sign-On to continue');
+        toast('Please use Single Sign-On to continue', { icon: 'ℹ️' });
       }
     } catch (err) {
       console.error('Error detecting auth type:', err);

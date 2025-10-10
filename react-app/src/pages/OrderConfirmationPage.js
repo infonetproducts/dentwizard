@@ -207,8 +207,7 @@ const OrderConfirmationPage = () => {
         {/* Additional Info */}
         <Alert severity="info" sx={{ mt: 4 }}>
           <Typography variant="body2">
-            <strong>Questions about your order?</strong> Contact our support team at 
-            support@dentwizard.com or call 1-800-XXX-XXXX
+            Questions about your order? Contact our support team at info@leadergraphic.com or call (814) 528-5722.
           </Typography>
         </Alert>
       </Paper>

@@ -11,7 +11,8 @@ import { msalConfig } from './authConfig';
 import { theme } from './theme/theme';
 import { store } from './store/store';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import LoginPage from './pages/LoginPage';
+import LoginPage from './pages/LoginPageSSO'; // Updated to use SSO-enabled login
+import SSOCallbackPage from './pages/auth/SSOCallbackPage';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
@@ -75,7 +76,11 @@ function App() {
                 }}
               />
               <Routes>
+                {/* Public Routes */}
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/auth/sso-callback" element={<SSOCallbackPage />} />
+                
+                {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>
                   <Route element={<Layout />}>
                     <Route path="/" element={<HomePage />} />

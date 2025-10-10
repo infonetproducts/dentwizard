@@ -45,6 +45,8 @@ function OrderHistoryPage() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState('');
   
   useEffect(() => {
     fetchOrderDetails();
@@ -59,6 +61,51 @@ function OrderHistoryPage() {
       setError('Failed to load order details');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!window.confirm('Are you sure you want to cancel this order? Your budget will be refunded.')) {
+      return;
+    }
+    
+    setCancelling(true);
+    setCancelError('');
+    
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await api.post('/orders/cancel.php', {
+        order_id: order.id,
+        user_id: user.id,
+        auth_token: token
+      });
+      
+      if (response.data.success) {
+        // Show success message
+        alert(`Order cancelled! $${response.data.refunded_amount.toFixed(2)} refunded to your budget.`);
+        
+        // Update local user budget
+        const updatedUser = { 
+          ...user, 
+          budget: { 
+            ...user.budget, 
+            balance: response.data.new_balance 
+          }
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        // Reload order details to show cancelled status
+        fetchOrderDetails();
+      } else {
+        setCancelError(response.data.message || 'Failed to cancel order');
+      }
+    } catch (error) {
+      console.error('Cancel error:', error);
+      setCancelError(error.response?.data?.message || 'Failed to cancel order');
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -340,15 +387,36 @@ function OrderHistoryPage() {
 
           {/* Actions */}
           <Box sx={{ mt: 3 }}>
+            {/* Info alert for cancellable orders */}
+            {order.status.toLowerCase() === 'new' && (
+              <Alert severity="info" sx={{ mb: 2 }}>
+                This order can still be cancelled. Your budget will be refunded.
+              </Alert>
+            )}
+            
             {order.status === 'delivered' && (
               <Button fullWidth variant="outlined" sx={{ mb: 1 }}>
                 Leave a Review
               </Button>
             )}
+            
             {order.status !== 'cancelled' && order.status !== 'delivered' && (
-              <Button fullWidth variant="outlined" color="error">
-                Cancel Order
+              <Button 
+                fullWidth 
+                variant="outlined" 
+                color="error"
+                onClick={handleCancelOrder}
+                disabled={cancelling || order.status.toLowerCase() !== 'new'}
+              >
+                {cancelling ? 'Cancelling...' : 'Cancel Order'}
               </Button>
+            )}
+            
+            {/* Error message display */}
+            {cancelError && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {cancelError}
+              </Alert>
             )}
           </Box>
         </Grid>

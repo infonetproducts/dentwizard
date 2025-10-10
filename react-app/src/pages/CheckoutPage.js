@@ -92,7 +92,8 @@ const CheckoutPage = () => {
   const [taxAmount, setTaxAmount] = useState(0);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
-    departmentCode: ''
+    departmentCode: '',
+    costCenter: ''
   });
   const [userBudget, setUserBudget] = useState({
     available: 0,
@@ -420,6 +421,17 @@ const CheckoutPage = () => {
     if (activeStep === 0) {
       if (!validateShipping()) return;
     }
+    if (activeStep === 1) {
+      // Validate payment step
+      if (!formData.costCenter || formData.costCenter.trim() === '') {
+        setError('Cost Center is required');
+        return;
+      }
+      if (paymentMethod === 'department' && (!formData.departmentCode || formData.departmentCode.trim() === '')) {
+        setError('Department/Billing Code is required when using department payment method');
+        return;
+      }
+    }
     setActiveStep((prevStep) => prevStep + 1);
   };
   
@@ -429,6 +441,12 @@ const CheckoutPage = () => {
   
   const handlePlaceOrder = async () => {
     if (!validateShipping()) return;
+    
+    // Validate cost center
+    if (!formData.costCenter || formData.costCenter.trim() === '') {
+      setError('Cost Center is required');
+      return;
+    }
     
     setLoading(true);
     setError('');
@@ -463,6 +481,7 @@ const CheckoutPage = () => {
         },
         paymentMethod: paymentMethod,
         departmentCode: formData.departmentCode,
+        costCenter: formData.costCenter,
         shippingMethod: shippingMethod,
         shippingCost: shippingCost,
         tax: taxAmount,
@@ -784,6 +803,18 @@ const CheckoutPage = () => {
                   />
                 )}
 
+                {/* Cost Center - Required for all orders */}
+                <TextField
+                  fullWidth
+                  label="Cost Center"
+                  name="costCenter"
+                  value={formData.costCenter}
+                  onChange={handleInputChange}
+                  required
+                  helperText="Required: Enter your cost center code"
+                  sx={{ mt: 2 }}
+                />
+
                 <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
                   <Button onClick={handleBack}>
                     Back
@@ -826,6 +857,15 @@ const CheckoutPage = () => {
                     {paymentMethod === 'budget' && 'Budget Balance'}
                     {paymentMethod === 'card' && 'Credit Card'}
                     {paymentMethod === 'department' && `Department/Billing Code: ${formData.departmentCode}`}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ mt: 3 }}>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Cost Center
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {formData.costCenter}
                   </Typography>
                 </Box>
 

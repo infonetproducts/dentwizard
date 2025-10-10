@@ -1,0 +1,23 @@
+{
+    "name": "dentwizard/saml-sso",
+    "description": "SAML SSO integration for DentWizard Apparel",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "onelogin/php-saml": "^4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DentWizard\\Auth\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

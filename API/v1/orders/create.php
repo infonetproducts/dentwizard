@@ -83,6 +83,9 @@ $phone = isset($shipping['phone']) ? $mysqli->real_escape_string($shipping['phon
 $email = $user['Email'];
 $user_login = isset($user['Login']) ? $user['Login'] : $email;
 
+// Get cost center (mandatory field)
+$cost_center = isset($input['costCenter']) ? $mysqli->real_escape_string($input['costCenter']) : '';
+
 // Set dates
 $order_date = date('Y-m-d H:i:s');
 $due_date = date('Y-m-d', strtotime('+7 days'));
@@ -94,14 +97,14 @@ $query = "INSERT INTO Orders (
     ShipToName, ShipToDept, Phone, 
     Address1, Address2, City, State, Zip, 
     Notes, BillCode, BillTo, Status, ShipDate, CID,
-    order_total, total_sale_tax, shipping_charge
+    order_total, total_sale_tax, shipping_charge, cost_center
 ) VALUES (
     '$order_id', '$order_date', '$user_id', '$user_login', '$email',
     '$name', '', '$due_date', '',
     '$name', '', '$phone',
     '$address1', '', '$city', '$state', '$zip',
     '', 0, '', 'new', '$order_date', '$CID',
-    '$total', '$tax_amount', '$shipping_cost'
+    '$total', '$tax_amount', '$shipping_cost', '$cost_center'
 )";
 
 $result = $mysqli->query($query);
